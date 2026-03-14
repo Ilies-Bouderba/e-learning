@@ -1,0 +1,8 @@
+.announcements-list { display: flex; flex-direction: column; gap: 0; }
+.announcement-item { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; border-bottom: 1.5px solid rgba(15,14,23,0.1); transition: background 0.15s; }
+.announcement-item:hover { background: rgba(255,225,77,0.08); padding-left: 0.5rem; }
+.ann-left { display: flex; align-items: center; gap: 1rem; }
+.ann-icon { font-size: 1.5rem; }
+.ann-title { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; }
+.ann-course { font-size: 0.8rem; color: var(--c-muted); margin-top: 2px; }
+.ann-date {  margin-right: 10px; font-size: 0.8rem; color: var(--c-muted); white-space: nowrap; }

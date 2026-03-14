@@ -1,7 +1,16 @@
 <?php
 
+use App\Livewire\Home;
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
+use App\Livewire\Dashboard\Teacher as TeacherDashboard;
+use App\Livewire\Dashboard\Student as StudentDashboard;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', Home::class)->name('home');
+
+Route::get('/login', Login::class)->name('login');
+Route::get('/register', Register::class)->name('register');
+
+Route::get('/dashboard/teacher', TeacherDashboard::class)->name('dashboard.teacher');
+Route::get('/dashboard/student', StudentDashboard::class)->name('dashboard.student');

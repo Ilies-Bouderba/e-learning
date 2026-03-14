@@ -1,11 +1,20 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+@import './base.css';
+@import './nav.css';
+@import './footer.css';
+@import './hero.css';
+@import './ticker.css';
+@import './courses.css';
+@import './steps.css';
+@import './announcements.css';
+@import './cta.css';
+@import './responsive.css';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-}
+@import './auth.css';
+
+@import './dashboard/dashboard.css';
+
+

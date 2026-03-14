@@ -1,0 +1,19 @@
+@media (max-width: 1024px) {
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-right { height: 320px; }
+  .card-course { width: 220px; top: 30px; left: 0; }
+  .card-exam { width: 180px; right: 0; }
+  .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .cta-inner { flex-direction: column; align-items: flex-start; }
+  .cta-actions { align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .hero-right { display: none; }
+  .hero-stats { flex-wrap: wrap; gap: 1rem; }
+}
