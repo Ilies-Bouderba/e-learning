@@ -4,7 +4,13 @@ use Livewire\Component;
 
 new class extends Component
 {
-    //
+    public function logout() {
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        return redirect('/login');
+    }
 };
 ?>
 
@@ -25,10 +31,9 @@ new class extends Component
 
         <div class="nav-actions">
             @auth
-                <a href="#" class="btn btn-primary btn-sm-nav">Dashboard →</a>
                 <form method="POST" action="#" style="display:inline">
                     @csrf
-                    <button type="submit" class="btn btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Logout</button>
+                    <button class="btn btn-ghost" wire:click="logout" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Logout</button>
                 </form>
             @else
                 <a href="{{ route('login') }}" class="btn btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Login</a>

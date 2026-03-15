@@ -12,5 +12,6 @@ Route::get('/', Home::class)->name('home');
 Route::get('/login', Login::class)->name('login');
 Route::get('/register', Register::class)->name('register');
 
-Route::get('/dashboard/teacher', TeacherDashboard::class)->name('dashboard.teacher');
-Route::get('/dashboard/student', StudentDashboard::class)->name('dashboard.student');
+Route::get('/dashboard/teacher', TeacherDashboard::class)->middleware(['auth', 'role:teacher'])->name('dashboard.teacher');
+Route::get('/dashboard/student', StudentDashboard::class)->middleware(['auth', 'role:student'])->name('dashboard.student');
+

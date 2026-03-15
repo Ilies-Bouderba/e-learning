@@ -23,11 +23,12 @@
                 <p class="auth-sub">Don't have an account? <a href="/register">Sign up free →</a></p>
             </div>
 
-            <form class="auth-form" action="#" method="POST">
+            <form class="auth-form" wire:submit='login'>
 
                 <div class="form-group">
                     <label for="email">Email address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email">
+                    <input type="email" id="email" name="email" wire:model="email" placeholder="you@example.com" autocomplete="email">
+                    @error('email') <span class="text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-group">
@@ -35,7 +36,9 @@
                         <label for="password">Password</label>
                         <a href="/forgot-password" class="form-forgot">Forgot password?</a>
                     </div>
-                    <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
+                    <input type="password" id="password" name="password" wire:model="password" placeholder="••••••••" autocomplete="current-password">
+                    @error('password') <span class="text-red-500">{{ $message }}</span> @enderror
+
                 </div>
 
                 <div class="form-check">
