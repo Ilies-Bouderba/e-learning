@@ -167,12 +167,14 @@ class Student:
         total_courses:pd.DataFrame = pd.read_csv(self.courses)
 
         for i in range(length):
+            index:list[int] = [i for i in range(15)]
+            index:list[int] = random.sample(index,4)
             department:str =df.loc[i,"Department"]
             course :pd.DataFrame = total_courses[total_courses["Department"]==department]
 
             result:str = ""
             for j in range (4):
-                result +=""+course.iloc[[index[j]]]["CourseName"]+"\n"
+                result +=str(course.iloc[index[j]]["CourseName"])+"\n"
             array.append(result)
             
         pd.DataFrame({"course_name":array}).to_csv("result/"+self.courses)
