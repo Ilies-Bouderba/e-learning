@@ -62,7 +62,7 @@ class Student:
         else:
             raise ValueError(f'"{main}" path is incorrect.')
 
-    def extract_comments(self,length:int):
+    def extract_comments(self,length:int) ->pd.DataFrame:
         """
         this function will read dates.csv file then it will extract comments, clean them.
 
@@ -90,7 +90,7 @@ class Student:
         result.to_csv("result/"+self.comments,index=False)
         return result
 
-    def extract_dates(self):
+    def extract_dates(self) ->pd.DataFrame:
         """
         this function will read dates.csv file then it will extract the date of signup and last seen, clean them.
 
@@ -113,11 +113,11 @@ class Student:
         )
         df.to_csv("result/"+self.dates,index=False)
         return df
-    def generate_password(self,length:int=10):
+    def generate_password(self,length:int=10) ->str:
         chars = string.ascii_letters + string.digits + "!@#$%&*"
         return ''.join(random.choice(chars) for _ in range(length))
 
-    def extract_student_info(self):
+    def extract_student_info(self) ->pd.DataFrame:
         """
         this funtion will read main.csv file and extract the important information for the students
 
@@ -150,7 +150,7 @@ class Student:
         new_df.to_csv("result/"+self.main,index=False)
         return new_df
     
-    def generate_courses(self,df:pd.DataFrame,length:int):
+    def generate_courses(self,df:pd.DataFrame,length:int) ->pd.DataFrame:
         """
         this function generate dataframe when each line has 3 course name
 
@@ -180,7 +180,7 @@ class Student:
         pd.DataFrame({"course_name":array}).to_csv("result/"+self.courses)
         return pd.DataFrame({"course_name":array})
     
-    def merge_result(self):
+    def merge_result(self) ->pd.DataFrame:
         """
         this function will merge all cleaned datasets at one.
 
@@ -198,10 +198,18 @@ class Student:
         info["password"] = [self.generate_password() for _ in range(length)]
 
         result:pd.DataFrame = pd.concat([info,courses,dates,comments],axis=1)
+        result.columns = result.columns.str.lower()
+        result.rename(columns={"signupdate":"signup_date","lastactivedate":"last_active_date"},inplace=True)
         result.to_csv("result/student.csv",index=False)
         return result
 
-
+"""
+last result:
+Index(['student_id', 'first_name', 'last_name', 'email', 'gender', 'age',
+       'department', 'password', 'course_name', 'signup_date',
+       'last_active_date', 'comment'],
+      dtype='str')
+"""
 if __name__ == "__main__":
     student =Student("comments.csv","dates.csv","main.csv","courses.csv")
     print(student.merge_result())

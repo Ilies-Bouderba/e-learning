@@ -1,4 +1,4 @@
-Student_ID,First_Name,Last_Name,Email,Gender,Age,Department,password,course_name,SignUpDate,LastActiveDate,comment
+student_id,first_name,last_name,email,gender,age,department,password,course_name,signup_date,last_active_date,comment
 S1000,Omar,Williams,student0@university.com,Female,22,Mathematics,rP#1ApJBvY,"Abstract Algebra
 Linear Algebra
 Probability
