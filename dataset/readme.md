@@ -20,7 +20,7 @@
 <p>Last result is 2500 student where each one has the following information: <br>
 <code>['student_id', 'first_name', 'last_name', 'email', 'gender', 'age',
        'department', 'password', 'course_name', 'signup_date',
-       'last_active_date', 'comment']
+       'last_active_date', 'comment', 'quiz_score']
       </code>
 </p>
 <h1>Professor Dataset</h1>
@@ -31,8 +31,14 @@
 <p>I apply the same cleaning and preprocessing techniques to the professor dataset and i generate the missing columns.</p>
 <p>Last result is 237 professor where each one has the following information: <br>
 <code>['id', 'name', 'department', 'password']</code>
+<br>
+At this point we can fill the database with <code>professor.csv</code> file.
+</p>
 <hr>
 <p><small>The departments that exists in the dataset are: <code>Mathematics, Business, Engineering, CS</code> </small></p>
-</p>
+<p><small>I deleted the old dataset and the
+<code>result</code> folder so we can push the repository to GitHub.
+  The old dataset is available in the mentioned links.
+</small></p>
 </body>
 </html>

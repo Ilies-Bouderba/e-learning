@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import random 
 import string
+import numpy as np
 
 
 
@@ -202,15 +203,49 @@ class Student:
         result.rename(columns={"signupdate":"signup_date","lastactivedate":"last_active_date"},inplace=True)
         result.to_csv("result/student.csv",index=False)
         return result
+    
+    @staticmethod
+    def add_quiz_percent(file_path:str):
+        """
+        this function add quiz score to the student dataset
+
+        :param file_path: refers to the path of student dataset
+        :type file_path: str
+
+        :return: return new dataframe
+        :rtype: pandas.DataFrame
+        
+        """
+        file:Path = Path(file_path)
+        if not file.exists():
+            raise ValueError(f'"{file_path}" path is not exist.')
+        df:pd.DataFrame = pd.read_csv(file_path)
+        length = len(df)
+        percent:list[float]=np.random.rand(length)
+
+        df_quize:pd.DataFrame = pd.DataFrame({"quiz_score":percent})
+        new_df: pd.DataFrame = pd.concat([df,df_quize],axis=1)
+        new_df.to_csv(file_path,index=False)
+
+        return new_df
+
+        
+        
 
 """
 last result:
 Index(['student_id', 'first_name', 'last_name', 'email', 'gender', 'age',
        'department', 'password', 'course_name', 'signup_date',
-       'last_active_date', 'comment'],
+       'last_active_date', 'comment', 'quiz_score'],
       dtype='str')
 """
 if __name__ == "__main__":
-    student =Student("comments.csv","dates.csv","main.csv","courses.csv")
-    print(student.merge_result())
+    try:
+        student =Student("comments.csv","dates.csv","main.csv","courses.csv")
+        print(student.merge_result())
+    except ValueError :
+        new_df:pd.DataFrame=Student.add_quiz_percent("student.csv")
+        print(new_df.columns)
+
+    
 
