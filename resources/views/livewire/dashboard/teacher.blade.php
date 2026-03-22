@@ -37,9 +37,11 @@
         </nav>
 
         <div class="sidebar-user">
-            <div class="sidebar-avatar sidebar-avatar-teacher">KM</div>
+            <div class="sidebar-avatar sidebar-avatar-teacher">
+                {{ substr(auth()->user()->name, 0, 2) }}
+            </div>
             <div class="sidebar-user-info">
-                <span class="sidebar-user-name">Karim Messai</span>
+                <span class="sidebar-user-name">{{ auth()->user()->name }}</span>
                 <span class="sidebar-user-role">Teacher</span>
             </div>
             <a href="#" class="sidebar-logout" title="Logout">↩</a>
@@ -52,10 +54,10 @@
         {{-- Header --}}
         <div class="dash-header">
             <div>
-                <h1 class="dash-title">Welcome back, Karim 👋</h1>
+                <h1 class="dash-title">Welcome back, {{ auth()->user()->name }} 👋</h1>
                 <p class="dash-subtitle">Here's an overview of your courses and students.</p>
             </div>
-            <a href="#" class="btn btn-primary">+ New Course</a>
+                <a href="{{ route("cours.create") }}" class="btn btn-primary">+ New Course</a>
         </div>
 
         {{-- Stats row --}}

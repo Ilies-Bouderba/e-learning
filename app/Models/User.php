@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -34,6 +33,21 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+   public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Cour::class, 'teacher_id');
+    }
 
     /**
      * Get the attributes that should be cast.
