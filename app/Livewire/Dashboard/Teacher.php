@@ -8,6 +8,9 @@ class Teacher extends Component
 {
     public function render()
     {
-        return view('livewire.dashboard.teacher');
+        $courses = auth()->user()->courses()->latest()->take(3)->get();
+        $totalCourses = auth()->user()->courses()->count();
+
+        return view('livewire.dashboard.teacher', compact('courses', 'totalCourses'));
     }
 }

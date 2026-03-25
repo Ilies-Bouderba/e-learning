@@ -65,7 +65,7 @@
             <div class="dash-stat-card">
                 <div class="dsc-icon">📚</div>
                 <div class="dsc-info">
-                    <span class="dsc-num">3</span>
+                    <span class="dsc-num">{{ $totalCourses }}</span>
                     <span class="dsc-label">Active Courses</span>
                 </div>
             </div>
@@ -98,29 +98,30 @@
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">My Courses</h2>
-                    <a href="#" class="dash-card-link">Manage all →</a>
+                    <a href="{{ route("cours.index") }}" class="dash-card-link">Manage all →</a>
                 </div>
+
                 <div class="teacher-courses">
-
+                    @forelse($courses as $course)
                     <div class="teacher-course-item">
                         <div class="tci-left">
-                            <span class="tci-icon">📐</span>
+                            <span class="tci-icon">{{ $course->icon }}</span>
                             <div>
-                                <div class="tci-name">Advanced Mathematics</div>
-                                <div class="tci-meta">9 chapters · 8 exams</div>
+                                <div class="tci-name">{{ $course->title }}</div>
+                                <div class="tci-meta">0 chapters · 0 exams</div>
                             </div>
                         </div>
                         <div class="tci-stats">
                             <div class="tci-stat">
-                                <span class="tci-stat-num">68</span>
+                                <span class="tci-stat-num">0</span>
                                 <span class="tci-stat-label">Students</span>
                             </div>
                             <div class="tci-stat">
-                                <span class="tci-stat-num">74%</span>
+                                <span class="tci-stat-num">0%</span>
                                 <span class="tci-stat-label">Avg Progress</span>
                             </div>
                             <div class="tci-stat">
-                                <span class="tci-stat-num">82</span>
+                                <span class="tci-stat-num">0</span>
                                 <span class="tci-stat-label">Avg Score</span>
                             </div>
                         </div>
@@ -128,62 +129,11 @@
                             <a href="#" class="btn-sm">Manage →</a>
                         </div>
                     </div>
-
-                    <div class="teacher-course-item">
-                        <div class="tci-left">
-                            <span class="tci-icon">🔢</span>
-                            <div>
-                                <div class="tci-name">Statistics & Probability</div>
-                                <div class="tci-meta">7 chapters · 5 exams</div>
-                            </div>
-                        </div>
-                        <div class="tci-stats">
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">45</span>
-                                <span class="tci-stat-label">Students</span>
-                            </div>
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">58%</span>
-                                <span class="tci-stat-label">Avg Progress</span>
-                            </div>
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">78</span>
-                                <span class="tci-stat-label">Avg Score</span>
-                            </div>
-                        </div>
-                        <div class="tci-actions">
-                            <a href="#" class="btn-sm">Manage →</a>
-                        </div>
-                    </div>
-
-                    <div class="teacher-course-item">
-                        <div class="tci-left">
-                            <span class="tci-icon">📊</span>
-                            <div>
-                                <div class="tci-name">Linear Algebra</div>
-                                <div class="tci-meta">6 chapters · 4 exams</div>
-                            </div>
-                        </div>
-                        <div class="tci-stats">
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">29</span>
-                                <span class="tci-stat-label">Students</span>
-                            </div>
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">41%</span>
-                                <span class="tci-stat-label">Avg Progress</span>
-                            </div>
-                            <div class="tci-stat">
-                                <span class="tci-stat-num">71</span>
-                                <span class="tci-stat-label">Avg Score</span>
-                            </div>
-                        </div>
-                        <div class="tci-actions">
-                            <a href="#" class="btn-sm">Manage →</a>
-                        </div>
-                    </div>
-
+                    @empty
+                    <div class="empty-msg">No courses yet. <a href="{{ route('cours.create') }}">Create your first →</a></div>
+                    @endforelse
                 </div>
+
             </div>
 
             {{-- ── Recent Students ── --}}

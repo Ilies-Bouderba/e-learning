@@ -1,39 +1,28 @@
 <?php
-
+// database/factories/CourFactory.php
 namespace Database\Factories;
 
-use App\Models\Cour;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<cour>
- */
 class CourFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
+        $icons = ['📚', '🔬', '📐', '💻', '🌍', '🎨', '⚗️', '📖', '🧬', '🎵', '🏛️', '🧮'];
+
         return [
-            'icon'        => "⚗️",
-            'teacher_id'  => User::factory()->teacher(),
-            'title'       => fake()->randomElement([
-                'Biology Molecular',
-                'Advanced Mathematics',
-                'Web Development',
-                'World History',
-                'Organic Chemistry',
-                'Visual Design',
-                'Physics 101',
-                'English Literature',
-                'Data Structures',
-                'French Language',
+            'teacher_id'    => User::factory()->teacher(),
+            'department_id' => Department::inRandomOrder()->first()?->id ?? 1,
+            'icon'          => fake()->randomElement($icons),
+            'title'         => fake()->randomElement([
+                'Biology Molecular', 'Advanced Mathematics', 'Web Development',
+                'World History', 'Organic Chemistry', 'Visual Design',
+                'Physics 101', 'English Literature', 'Data Structures', 'French Language',
             ]),
-            'description' => fake()->paragraph(),
+            'description'   => fake()->paragraph(),
+            'password'      => null,
         ];
     }
 }

@@ -1,28 +1,25 @@
 <?php
-
+// app/Livewire/Auth/Login.php
 namespace App\Livewire\Auth;
 
 use Livewire\Component;
-use App\Models\User;
+use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class Login extends Component
 {
-     #[Rule('required|email')]
-    public string $email = '';
-
-    #[Rule('required|min:8')]
+    public string $email    = '';
     public string $password = '';
+    public bool   $remember = false;
 
-    public bool $remember = false;
+    protected array $rules = [
+        'email'    => 'required|email',
+        'password' => 'required',
+    ];
 
     public function login()
     {
-        $this->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
+        $this->validate();
 
         if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             $this->addError('email', 'These credentials do not match our records.');
@@ -31,7 +28,12 @@ class Login extends Component
 
         session()->regenerate();
 
-        return redirect()->intended('/');
+        return match(auth()->user()->role) {
+            'admin'   => redirect()->route('dashboard.admin'),
+            'teacher' => redirect()->route('dashboard.teacher'),
+            'student' => redirect()->route('dashboard.student'),
+            default   => redirect('/'),
+        };
     }
 
     public function render()

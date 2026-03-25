@@ -12,13 +12,8 @@
 @import './announcements.css';
 @import './cta.css';
 @import './responsive.css';
-
 @import './auth.css';
-
 @import './dashboard/dashboard.css';
-
-
 @import './cours/create.css';
-
-
-
+@import './cours/index.css';
+@import './cours/edit.css';

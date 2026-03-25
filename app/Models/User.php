@@ -24,6 +24,7 @@ class User extends Authenticatable
         'role',
     ];
 
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -33,6 +34,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
    public function isTeacher(): bool
     {
@@ -61,5 +67,15 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => 'string',
         ];
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Cour::class, 'enrollments', 'student_id', 'course_id');
     }
 }
