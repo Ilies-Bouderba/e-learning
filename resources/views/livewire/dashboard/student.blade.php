@@ -307,7 +307,8 @@
                         <div class="comment-avatar">SA</div>
                         <div class="comment-body">
                             <div class="comment-course">Biology Molecular</div>
-                            <div class="comment-text">Can someone explain the difference between mitosis and meiosis again?</div>
+                            <div class="comment-text">Can someone explain the difference between mitosis and meiosis
+                                again?</div>
                             <div class="comment-date">2 days ago</div>
                         </div>
                     </div>

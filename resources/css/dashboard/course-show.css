@@ -1,0 +1,104 @@
+/* ============================================================
+   dashboard/course-show.css — course detail page
+   ============================================================ */
+
+.course-show-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: var(--border);
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+.csh-left {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+.csh-icon {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.csh-dept {
+    font-size: 0.72rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+}
+.csh-title {
+    font-family: var(--font-head);
+    font-size: clamp(1.4rem, 2vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+}
+.csh-desc {
+    font-size: 0.9rem;
+    color: var(--c-muted);
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+}
+.csh-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--c-muted);
+}
+.csh-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* ── Chapters list ── */
+.chapter-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    border-bottom: 1.5px solid rgba(15, 14, 23, 0.07);
+    transition: background 0.15s;
+}
+.chapter-item:last-child {
+    border-bottom: none;
+}
+.chapter-item:hover {
+    background: rgba(255, 225, 77, 0.05);
+}
+.chapter-num {
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--c-muted);
+    min-width: 28px;
+    flex-shrink: 0;
+}
+.chapter-info {
+    flex: 1;
+    min-width: 0;
+}
+.chapter-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 0.2rem;
+}
+.chapter-content {
+    font-size: 0.78rem;
+    color: var(--c-muted);
+    line-height: 1.5;
+}
+.chapter-actions {
+    flex-shrink: 0;
+}

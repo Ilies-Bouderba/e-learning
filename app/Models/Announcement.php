@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Announcement extends Model {
-
+class Announcement extends Model
+{
     use HasFactory;
 
     protected $fillable = ['course_id', 'title', 'content', 'posted_at'];
 
-    protected $casts    = ['posted_at' => 'datetime'];
+    protected $casts = ['posted_at' => 'datetime'];
 
     public function course()
     {

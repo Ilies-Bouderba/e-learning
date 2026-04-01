@@ -35,12 +35,12 @@ class UserFactory extends Factory
 
     public function teacher(): static
     {
-        return $this->state(fn() => ['role' => 'teacher']);
+        return $this->state(fn () => ['role' => 'teacher']);
     }
 
     public function student(): static
     {
-        return $this->state(fn() => ['role' => 'student']);
+        return $this->state(fn () => ['role' => 'student']);
     }
 
     /**

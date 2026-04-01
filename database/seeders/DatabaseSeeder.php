@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Department;
 use App\Models\Cour;
+use App\Models\Department;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -13,16 +13,13 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         User::create([
-            'name'     => 'Admin',
-            'email'    => 'admin@edumex.com',
+            'name' => 'Admin',
+            'email' => 'admin@edumex.com',
             'password' => Hash::make('admin1234'),
-            'role'     => 'admin',
+            'role' => 'admin',
         ]);
 
         $departments = [
@@ -38,31 +35,38 @@ class DatabaseSeeder extends Seeder
             Department::create($dept);
         }
 
-        $teachers = User::factory()->teacher()->count(5)->create();
-
-        User::factory()->student()->count(20)->create();
-
-        $teachers->each(function ($teacher) {
-            Cour::factory()->count(3)->create(['teacher_id' => $teacher->id]);
-        });
-
-        User::create([
-            'name'     => 'Test Teacher',
-            'email'    => 'teacher@test.com',
+        $teacher = User::create([
+            'name' => 'Test Teacher',
+            'email' => 'teacher@test.com',
             'password' => Hash::make('password'),
-            'role'     => 'teacher',
+            'role' => 'teacher',
         ]);
 
         User::create([
-            'name'     => 'Test Student',
-            'email'    => 'student@test.com',
+            'name' => 'Test Student',
+            'email' => 'student@test.com',
             'password' => Hash::make('password'),
-            'role'     => 'student',
+            'role' => 'student',
         ]);
 
-        $this->call([
-            ChapterSeeder::class,
-            EnrollmentSeeder::class,
+        Cour::create([
+            'teacher_id' => $teacher->id,
+            'department_id' => 1,
+            'icon' => '💻',
+            'title' => 'Computer Science',
+            'description' => 'Learn programming, algorithms, and software development.',
+            'password' => null,
         ]);
+
+        Cour::create([
+            'teacher_id' => $teacher->id,
+            'department_id' => 2,
+            'icon' => '📐',
+            'title' => 'Advanced Mathematics',
+            'description' => 'Calculus, linear algebra, and statistics.',
+            'password' => null,
+        ]);
+
+        $this->call(ChapterSeeder::class);
     }
 }

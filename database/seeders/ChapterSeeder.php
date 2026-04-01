@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cour;
 use App\Models\Chapter;
+use App\Models\Cour;
 use Illuminate\Database\Seeder;
 
 class ChapterSeeder extends Seeder

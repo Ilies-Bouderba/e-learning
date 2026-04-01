@@ -1,12 +1,63 @@
-.footer { background: var(--c-dark); color: var(--c-bg); border-top: var(--border); padding-top: 3.5rem; }
-.footer-inner { display: flex; gap: 4rem; flex-wrap: wrap; padding-bottom: 2.5rem; border-bottom: 1.5px solid rgba(245,242,235,0.1); }
-.footer-brand { flex: 1; min-width: 200px; }
-.footer-brand .nav-logo { color: var(--c-bg); margin-bottom: 0.5rem; display: block; }
-.footer-brand .nav-logo span { background: var(--c-yellow); color: var(--c-dark); }
-.footer-brand p { font-size: 0.875rem; color: rgba(245,242,235,0.5); margin-top: 0.5rem; }
-.footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
-.footer-col { display: flex; flex-direction: column; gap: 0.6rem; }
-.footer-heading { font-family: var(--font-head); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,235,0.4); margin-bottom: 0.25rem; }
-.footer-col a { font-size: 0.875rem; color: rgba(245,242,235,0.7); transition: color 0.15s; }
-.footer-col a:hover { color: var(--c-yellow); }
-.footer-bottom { padding: 1.5rem 2rem; font-size: 0.8rem; color: rgba(245,242,235,0.35); }
+.footer {
+    background: var(--c-dark);
+    color: var(--c-bg);
+    border-top: var(--border);
+    padding-top: 3.5rem;
+}
+.footer-inner {
+    display: flex;
+    gap: 4rem;
+    flex-wrap: wrap;
+    padding-bottom: 2.5rem;
+    border-bottom: 1.5px solid rgba(245, 242, 235, 0.1);
+}
+.footer-brand {
+    flex: 1;
+    min-width: 200px;
+}
+.footer-brand .nav-logo {
+    color: var(--c-bg);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.footer-brand .nav-logo span {
+    background: var(--c-yellow);
+    color: var(--c-dark);
+}
+.footer-brand p {
+    font-size: 0.875rem;
+    color: rgba(245, 242, 235, 0.5);
+    margin-top: 0.5rem;
+}
+.footer-links {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.footer-heading {
+    font-family: var(--font-head);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(245, 242, 235, 0.4);
+    margin-bottom: 0.25rem;
+}
+.footer-col a {
+    font-size: 0.875rem;
+    color: rgba(245, 242, 235, 0.7);
+    transition: color 0.15s;
+}
+.footer-col a:hover {
+    color: var(--c-yellow);
+}
+.footer-bottom {
+    padding: 1.5rem 2rem;
+    font-size: 0.8rem;
+    color: rgba(245, 242, 235, 0.35);
+}

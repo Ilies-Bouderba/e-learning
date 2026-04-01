@@ -44,11 +44,7 @@
 
                 <div class="form-group">
                     <label for="name">Full name</label>
-                    <input type="text"
-                           id="name"
-                           wire:model="name"
-                           placeholder="Sara Ahmed"
-                           autocomplete="name">
+                    <input type="text" id="name" wire:model="name" placeholder="Sara Ahmed" autocomplete="name">
                     @error('name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -56,47 +52,41 @@
 
                 <div class="form-group">
                     <label for="email">Email address</label>
-                    <input type="email"
-                           id="email"
-                           wire:model="email"
-                           placeholder="you@example.com"
-                           autocomplete="email">
+                    <input type="email" id="email" wire:model="email" placeholder="you@example.com"
+                        autocomplete="email">
                     @error('email')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
-                            <div class="form-group">
-                <label for="role">I am a</label>
+                <div class="form-group">
+                    <label for="role">I am a</label>
 
-                <div class="role-picker">
+                    <div class="role-picker">
 
-                    <label class="role-option {{ $role == 'student' ? 'role-active' : '' }}">
-                        <input type="radio" wire:model.live="role" value="student">
-                        <span class="role-icon">🎓</span>
-                        <span class="role-label">Student</span>
-                    </label>
+                        <label class="role-option {{ $role == 'student' ? 'role-active' : '' }}">
+                            <input type="radio" wire:model.live="role" value="student">
+                            <span class="role-icon">🎓</span>
+                            <span class="role-label">Student</span>
+                        </label>
 
-                    <label class="role-option {{ $role == 'teacher' ? 'role-active' : '' }}">
-                        <input type="radio" wire:model.live="role" value="teacher">
-                        <span class="role-icon">📖</span>
-                        <span class="role-label">Teacher</span>
-                    </label>
+                        <label class="role-option {{ $role == 'teacher' ? 'role-active' : '' }}">
+                            <input type="radio" wire:model.live="role" value="teacher">
+                            <span class="role-icon">📖</span>
+                            <span class="role-label">Teacher</span>
+                        </label>
 
+                    </div>
+
+                    @error('role')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
-
-                @error('role')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password"
-                           id="password"
-                           wire:model="password"
-                           placeholder="Min. 8 characters"
-                           autocomplete="new-password">
+                    <input type="password" id="password" wire:model="password" placeholder="Min. 8 characters"
+                        autocomplete="new-password">
                     @error('password')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -104,11 +94,8 @@
 
                 <div class="form-group">
                     <label for="password_confirmation">Confirm password</label>
-                    <input type="password"
-                           id="password_confirmation"
-                           wire:model="password_confirmation"
-                           placeholder="••••••••"
-                           autocomplete="new-password">
+                    <input type="password" id="password_confirmation" wire:model="password_confirmation"
+                        placeholder="••••••••" autocomplete="new-password">
                 </div>
 
                 <div class="form-check">

@@ -1,4 +1,3 @@
-{{-- resources/views/livewire/cours/enroll.blade.php --}}
 <div class="enroll-page">
     <div class="container">
         <div class="enroll-card">
@@ -9,21 +8,22 @@
             <div class="enroll-meta">
                 <span>👨‍🏫 {{ $cour->teacher->name }}</span>
                 <span>📖 {{ $cour->chapters()->count() }} chapters</span>
+                <span>👥 {{ $cour->enrollments()->count() }} students</span>
             </div>
-
-            @if($cour->hasPassword())
-            <div class="enroll-form">
-                <p class="enroll-locked">🔒 This course requires a password to enroll.</p>
-                <div class="cc-field">
-                    <label class="cc-label">Course Password</label>
-                    <input type="password" class="cc-input" wire:model="password" placeholder="Enter password...">
-                    @error('password') <span class="cc-error">{{ $message }}</span> @enderror
+            @if ($cour->hasPassword())
+                <div class="enroll-form">
+                    <p class="enroll-locked">🔒 This course requires a password to enroll.</p>
+                    <div class="cc-field">
+                        <label class="cc-label">Course Password</label>
+                        <input type="password" class="cc-input" wire:model="password" placeholder="Enter password...">
+                        @error('password')
+                            <span class="cc-error">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
-            </div>
             @endif
-
             <div class="enroll-actions">
-                <a href="/" class="btn btn-ghost">← Back</a>
+                <a href="{{ route('dashboard.student') }}" class="btn btn-ghost">← Back</a>
                 <button class="btn btn-primary btn-lg" wire:click="enroll">
                     <span wire:loading.remove wire:target="enroll">Enroll Now →</span>
                     <span wire:loading wire:target="enroll">Enrolling...</span>

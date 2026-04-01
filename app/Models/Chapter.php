@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\ChapterFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Chapter extends Model
 {
-    /** @use HasFactory<\Database\Factories\ChapterFactory> */
+    /** @use HasFactory<ChapterFactory> */
     use HasFactory;
 
     protected $fillable = ['course_id', 'title', 'chapter_number', 'content'];

@@ -13,7 +13,8 @@
                         Succeed.
                     </h1>
                     <p class="hero-sub">
-                        Join thousands of students in structured courses, live exams, and real-time progress tracking — all in one place.
+                        Join thousands of students in structured courses, live exams, and real-time progress tracking —
+                        all in one place.
                     </p>
                     <div class="hero-actions">
                         <a href="#" class="btn btn-primary">Sign Up Free →</a>
@@ -106,7 +107,7 @@
 
             <div>
                 <livewire:cours-card />
-        </div>
+            </div>
     </section>
 
     {{-- ========== HOW IT WORKS ========== --}}

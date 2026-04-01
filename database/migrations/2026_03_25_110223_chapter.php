@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('chapters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained('cours')->cascadeOnDelete();
+            $table->foreignId('course_id')->constrained('cours')->onDelete('cascade');
             $table->string('title');
             $table->integer('chapter_number');
             $table->text('content')->nullable();
@@ -22,9 +22,9 @@ return new class extends Migration
 
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chapter_id')->constrained('chapters')->onDelete('no action');
+            $table->foreignId('chapter_id')->constrained('chapters')->onDelete('cascade');
             $table->string('title');
-            $table->enum('type', ['pdf', 'video', 'image', 'other']);
+            $table->string('type')->default('pdf'); // Changed from enum to string for SQL Server
             $table->string('file_path');
             $table->timestamps();
         });
@@ -35,7 +35,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chapters');
         Schema::dropIfExists('attachments');
+        Schema::dropIfExists('chapters');
     }
 };

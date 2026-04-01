@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('student_progress', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
+            // Remove cascade on chapter_id to avoid multiple cascade paths
             $table->foreignId('chapter_id')->constrained('chapters')->onDelete('no action');
             $table->boolean('completed')->default(false);
             $table->timestamp('completed_at')->nullable();

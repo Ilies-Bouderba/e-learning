@@ -3,8 +3,7 @@
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
-new class extends Component
-{
+new class extends Component {
     public function logout()
     {
         Auth::logout();
@@ -26,7 +25,8 @@ new class extends Component
         <nav class="nav-links">
             @auth
                 <a href="{{ route('cours.index') }}">Courses</a>
-                <a href="{{ auth()->user()->role === 'teacher' ? route('dashboard.teacher') : route('dashboard.student') }}">Dashboard</a>
+                <a
+                    href="{{ auth()->user()->role === 'teacher' ? route('dashboard.teacher') : route('dashboard.student') }}">Dashboard</a>
             @endauth
             <a href="#">About</a>
         </nav>
@@ -37,8 +37,10 @@ new class extends Component
                     Logout
                 </button>
             @else
-                <a href="{{ route('login') }}" class="btn btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Sign Up Free</a>
+                <a href="{{ route('login') }}" class="btn btn-ghost"
+                    style="padding: 0.5rem 1rem; font-size: 0.85rem;">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-primary"
+                    style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Sign Up Free</a>
             @endauth
         </div>
 
@@ -50,10 +52,11 @@ new class extends Component
 
     {{-- Mobile menu --}}
     <div class="nav-mobile" id="navMobile">
-        <a href="{{ route("cours.index") }}">Courses</a>
-            @auth
-                <a href="{{ auth()->user()->role === 'teacher' ? route('dashboard.teacher') : route('dashboard.student') }}">Dashboard</a>
-            @endauth
+        <a href="{{ route('cours.index') }}">Courses</a>
+        @auth
+            <a
+                href="{{ auth()->user()->role === 'teacher' ? route('dashboard.teacher') : route('dashboard.student') }}">Dashboard</a>
+        @endauth
         <a href="#">About</a>
         @auth
             <button class="btn btn-primary" wire:click="logout" style="margin-top:0.5rem;">Logout</button>

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
 class Cour extends Model
@@ -56,7 +56,7 @@ class Cour extends Model
 
     public function hasPassword(): bool
     {
-        return !is_null($this->password);
+        return ! is_null($this->password);
     }
 
     public function checkPassword(string $pw): bool

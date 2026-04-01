@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model {
-
+class Comment extends Model
+{
     use HasFactory;
 
     protected $fillable = ['student_id', 'course_id', 'comment_text', 'posted_at'];
-    protected $casts    = ['posted_at' => 'datetime'];
+
+    protected $casts = ['posted_at' => 'datetime'];
 
     public function student()
     {
@@ -21,5 +22,4 @@ class Comment extends Model {
     {
         return $this->belongsTo(Cour::class, 'course_id');
     }
-
 }

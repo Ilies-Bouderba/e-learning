@@ -1,9 +1,48 @@
-.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
-.step-card { border: 2.5px solid rgba(245,242,235,0.2); border-radius: var(--radius); padding: 1.75rem 1.5rem; position: relative; transition: border-color 0.2s; }
-.step-card:hover { border-color: var(--c-yellow); }
-.step-card-accent { background: var(--c-yellow); border-color: var(--c-yellow); }
-.step-card-accent h3, .step-card-accent p, .step-card-accent .step-num { color: var(--c-dark) !important; }
-.step-num { font-family: var(--font-head); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; opacity: 0.4; margin-bottom: 1rem; color: var(--c-bg); }
-.step-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-.step-card h3 { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; color: var(--c-bg); margin-bottom: 0.5rem; }
-.step-card p { font-size: 0.875rem; color: rgba(245,242,235,0.65); }
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+.step-card {
+    border: 2.5px solid rgba(245, 242, 235, 0.2);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    transition: border-color 0.2s;
+}
+.step-card:hover {
+    border-color: var(--c-yellow);
+}
+.step-card-accent {
+    background: var(--c-yellow);
+    border-color: var(--c-yellow);
+}
+.step-card-accent h3,
+.step-card-accent p,
+.step-card-accent .step-num {
+    color: var(--c-dark) !important;
+}
+.step-num {
+    font-family: var(--font-head);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    opacity: 0.4;
+    margin-bottom: 1rem;
+    color: var(--c-bg);
+}
+.step-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+.step-card h3 {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--c-bg);
+    margin-bottom: 0.5rem;
+}
+.step-card p {
+    font-size: 0.875rem;
+    color: rgba(245, 242, 235, 0.65);
+}
