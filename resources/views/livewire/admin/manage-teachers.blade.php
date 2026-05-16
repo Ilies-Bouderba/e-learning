@@ -3,7 +3,7 @@
         <a href="{{ route('home') }}" class="sidebar-logo">edu<span>me</span>x</a>
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Overview</span>
-            <a href="{{ route('dashboard.admin') }}" class="sidebar-link"><span class="sidebar-icon">🏠</span>
+            <a href="{{ route('admin.dashboard') }}" class="sidebar-link"><span class="sidebar-icon">🏠</span>
                 Dashboard</a>
             <span class="sidebar-nav-label">Manage</span>
             <a href="{{ route('admin.teachers') }}" class="sidebar-link active"><span class="sidebar-icon">👨‍🏫</span>

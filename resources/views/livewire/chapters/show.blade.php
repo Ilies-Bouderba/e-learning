@@ -13,7 +13,7 @@
             </div>
             @if (auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
                 <div class="csh-actions">
-                    <a href="{{ route('chapters.edit', ['cour' => $cour, 'chapter' => $chapter]) }}"
+                    <a href="{{ route('teacher.chapters.edit', ['cour' => $cour, 'chapter' => $chapter]) }}"
                         class="btn btn-primary">Edit Chapter</a>
                 </div>
             @endif

@@ -11,14 +11,12 @@ use Livewire\Component;
 class Enroll extends Component
 {
     public Cour $cour;
-
     public string $password = '';
 
     public function enroll()
     {
         if ($this->cour->hasPassword() && ! $this->cour->checkPassword($this->password)) {
             $this->addError('password', 'Wrong course password.');
-
             return;
         }
 

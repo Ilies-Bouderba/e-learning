@@ -33,9 +33,9 @@ class Login extends Component
         session()->regenerate();
 
         return match (auth()->user()->role) {
-            'admin' => redirect()->route('dashboard.admin'),
-            'teacher' => redirect()->route('dashboard.teacher'),
-            'student' => redirect()->route('dashboard.student'),
+            'admin' => redirect()->route('admin.dashboard'),
+            'teacher' => redirect()->route('teacher.dashboard'),
+            'student' => redirect()->route('student.dashboard'),
             default => redirect('/'),
         };
     }

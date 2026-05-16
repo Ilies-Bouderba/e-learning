@@ -16,11 +16,9 @@ class Admin extends Component
         return view('livewire.dashboard.admin', [
             'totalTeachers' => User::where('role', 'teacher')->count(),
             'totalStudents' => User::where('role', 'student')->count(),
-            'totalCourses' => Cour::count(),
             'totalDepts' => Department::count(),
             'recentTeachers' => User::where('role', 'teacher')->withCount('courses')->latest()->take(5)->get(),
             'recentStudents' => User::where('role', 'student')->withCount('enrollments')->latest()->take(5)->get(),
-            'recentCourses' => Cour::with(['teacher', 'department'])->withCount('enrollments')->latest()->take(6)->get(),
             'departments' => Department::withCount('courses')->get(),
         ]);
     }

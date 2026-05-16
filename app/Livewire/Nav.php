@@ -12,7 +12,6 @@ class Nav extends Component
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
-
         return redirect('/login');
     }
 

@@ -75,6 +75,15 @@ class ManageCours extends Component
             $exam->delete();
         }
 
+        foreach ($course->quizzes as $quiz) {
+            $quiz->attempts()->delete();
+            $quiz->questions()->each(function ($question) {
+                $question->options()->delete();
+                $question->delete();
+            });
+            $quiz->delete();
+        }
+
         $course->announcements()->delete();
 
         $course->delete();

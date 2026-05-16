@@ -1,17 +1,13 @@
-{{-- resources/views/livewire/dashboard/student.blade.php --}}
-
 <div class="dash-layout">
-
-    {{-- ========== SIDEBAR ========== --}}
     <aside class="sidebar">
         <a href="/" class="sidebar-logo">edu<span>me</span>x</a>
-
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Main</span>
-            <a href="#" class="sidebar-link active">
+            {{-- FIXED: changed from dashboard.student to student.dashboard --}}
+            <a href="{{ route('student.dashboard') }}" class="sidebar-link active">
                 <span class="sidebar-icon">🏠</span> Dashboard
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('student.cours.index') }}" class="sidebar-link">
                 <span class="sidebar-icon">📚</span> My Courses
             </a>
             <a href="#" class="sidebar-link">
@@ -20,7 +16,6 @@
             <a href="#" class="sidebar-link">
                 <span class="sidebar-icon">📊</span> Progress
             </a>
-
             <span class="sidebar-nav-label">Other</span>
             <a href="#" class="sidebar-link">
                 <span class="sidebar-icon">📢</span> Announcements
@@ -32,354 +27,251 @@
                 <span class="sidebar-icon">⚙️</span> Settings
             </a>
         </nav>
-
         <div class="sidebar-user">
-            <div class="sidebar-avatar">SA</div>
+            <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
             <div class="sidebar-user-info">
-                <span class="sidebar-user-name">Sara Ahmed</span>
+                <span class="sidebar-user-name">{{ auth()->user()->name }}</span>
                 <span class="sidebar-user-role">Student</span>
             </div>
-            <a href="#" class="sidebar-logout" title="Logout">↩</a>
+            <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="sidebar-logout" title="Logout">↩</button></form>
         </div>
     </aside>
 
-    {{-- ========== MAIN CONTENT ========== --}}
     <main class="dash-main">
-
-        {{-- Header --}}
         <div class="dash-header">
             <div>
-                <h1 class="dash-title">Good morning, Sara 👋</h1>
+                <h1 class="dash-title">Good {{ \Carbon\Carbon::now()->format('l') }}! {{ auth()->user()->name }} 👋</h1>
                 <p class="dash-subtitle">Here's what's happening with your learning today.</p>
             </div>
-            <a href="/courses" class="btn btn-primary">Browse Courses →</a>
+            <a href="{{ route('student.cours.index') }}" class="btn btn-primary">Browse Courses →</a>
         </div>
 
-        {{-- Stats row --}}
+        @php
+            $enrolledCourses = auth()->user()->enrolledCourses()->with(['teacher', 'chapters', 'enrollments' => function($q) {
+                $q->where('student_id', auth()->id());
+            }])->get();
+
+            $totalChaptersCompleted = 0;
+            foreach($enrolledCourses as $course) {
+                $enrollment = $course->enrollments->first();
+                if($enrollment) {
+                    $totalChaptersCompleted += floor(($enrollment->progress_percentage / 100) * $course->chapters->count());
+                }
+            }
+
+            $totalQuizzesTaken = \App\Models\QuizAttempt::where('student_id', auth()->id())
+                ->where('completed_at', '!=', null)
+                ->count();
+
+            $avgScore = \App\Models\QuizAttempt::where('student_id', auth()->id())
+                ->where('completed_at', '!=', null)
+                ->avg('score') ?? 0;
+
+            $recentQuizAttempts = \App\Models\QuizAttempt::where('student_id', auth()->id())
+                ->where('completed_at', '!=', null)
+                ->with('quiz')
+                ->latest('completed_at')
+                ->take(4)
+                ->get();
+
+            $recentAnnouncements = [];
+            foreach($enrolledCourses as $course) {
+                foreach($course->announcements()->latest('posted_at')->take(2)->get() as $ann) {
+                    $ann->course_title = $course->title;
+                    $recentAnnouncements[] = $ann;
+                }
+            }
+            $recentAnnouncements = collect($recentAnnouncements)->sortByDesc('posted_at')->take(4);
+        @endphp
+
         <div class="dash-stats">
             <div class="dash-stat-card">
                 <div class="dsc-icon">📚</div>
                 <div class="dsc-info">
-                    <span class="dsc-num">4</span>
+                    <span class="dsc-num">{{ $enrolledCourses->count() }}</span>
                     <span class="dsc-label">Enrolled Courses</span>
                 </div>
             </div>
             <div class="dash-stat-card">
                 <div class="dsc-icon">✅</div>
                 <div class="dsc-info">
-                    <span class="dsc-num">12</span>
+                    <span class="dsc-num">{{ $totalChaptersCompleted }}</span>
                     <span class="dsc-label">Chapters Done</span>
                 </div>
             </div>
             <div class="dash-stat-card dash-stat-yellow">
                 <div class="dsc-icon">🏆</div>
                 <div class="dsc-info">
-                    <span class="dsc-num">87</span>
-                    <span class="dsc-label">Avg. Score</span>
+                    <span class="dsc-num">{{ round($avgScore) }}</span>
+                    <span class="dsc-label">Avg. Quiz Score</span>
                 </div>
             </div>
             <div class="dash-stat-card">
                 <div class="dsc-icon">📝</div>
                 <div class="dsc-info">
-                    <span class="dsc-num">3</span>
-                    <span class="dsc-label">Exams Taken</span>
+                    <span class="dsc-num">{{ $totalQuizzesTaken }}</span>
+                    <span class="dsc-label">Quizzes Taken</span>
                 </div>
             </div>
         </div>
 
         <div class="dash-grid">
-
-            {{-- ── Enrolled Courses ── --}}
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">My Courses</h2>
-                    <a href="#" class="dash-card-link">View all →</a>
+                    <a href="{{ route('student.cours.index') }}" class="dash-card-link">View all →</a>
                 </div>
-                <div class="enrolled-list">
-
-                    <div class="enrolled-item">
-                        <div class="enrolled-icon">🧬</div>
-                        <div class="enrolled-info">
-                            <div class="enrolled-name">Biology Molecular</div>
-                            <div class="enrolled-meta">12 chapters · Sara Ahmed</div>
-                            <div class="enrolled-bar">
-                                <div class="enrolled-fill" style="width: 72%"></div>
+                @if($enrolledCourses->count() > 0)
+                    <div class="enrolled-list">
+                        @foreach($enrolledCourses as $course)
+                            @php
+                                $enrollment = $course->enrollments->first();
+                                $progress = $enrollment ? $enrollment->progress_percentage : 0;
+                                $chaptersCompleted = floor(($progress / 100) * $course->chapters->count());
+                                $totalChapters = $course->chapters->count();
+                            @endphp
+                            <div class="enrolled-item">
+                                <div class="enrolled-icon">{{ $course->icon }}</div>
+                                <div class="enrolled-info">
+                                    <div class="enrolled-name">{{ $course->title }}</div>
+                                    <div class="enrolled-meta">{{ $totalChapters }} chapters · {{ $course->teacher->name }}</div>
+                                    <div class="enrolled-bar">
+                                        <div class="enrolled-fill" style="width: {{ $progress }}%"></div>
+                                    </div>
+                                </div>
+                                <div class="enrolled-right">
+                                    <span class="enrolled-pct">{{ $progress }}%</span>
+                                    <a href="{{ route('cours.show', $course) }}" class="btn-sm">Continue →</a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="enrolled-right">
-                            <span class="enrolled-pct">72%</span>
-                            <a href="#" class="btn-sm">Continue →</a>
-                        </div>
+                        @endforeach
                     </div>
-
-                    <div class="enrolled-item">
-                        <div class="enrolled-icon">📐</div>
-                        <div class="enrolled-info">
-                            <div class="enrolled-name">Advanced Mathematics</div>
-                            <div class="enrolled-meta">9 chapters · Karim Messai</div>
-                            <div class="enrolled-bar">
-                                <div class="enrolled-fill" style="width: 45%"></div>
-                            </div>
-                        </div>
-                        <div class="enrolled-right">
-                            <span class="enrolled-pct">45%</span>
-                            <a href="#" class="btn-sm">Continue →</a>
-                        </div>
+                @else
+                    <div class="mc-empty">
+                        <span>📭</span>
+                        <p>You're not enrolled in any courses yet.</p>
+                        <a href="{{ route('student.cours.index') }}" class="btn btn-primary" style="margin-top: 1rem;">Browse Courses →</a>
                     </div>
-
-                    <div class="enrolled-item">
-                        <div class="enrolled-icon">💻</div>
-                        <div class="enrolled-info">
-                            <div class="enrolled-name">Web Development</div>
-                            <div class="enrolled-meta">15 chapters · Lina Bouali</div>
-                            <div class="enrolled-bar">
-                                <div class="enrolled-fill" style="width: 91%"></div>
-                            </div>
-                        </div>
-                        <div class="enrolled-right">
-                            <span class="enrolled-pct">91%</span>
-                            <a href="#" class="btn-sm">Continue →</a>
-                        </div>
-                    </div>
-
-                    <div class="enrolled-item">
-                        <div class="enrolled-icon">⚗️</div>
-                        <div class="enrolled-info">
-                            <div class="enrolled-name">Organic Chemistry</div>
-                            <div class="enrolled-meta">11 chapters · Yacine Brahimi</div>
-                            <div class="enrolled-bar">
-                                <div class="enrolled-fill" style="width: 20%"></div>
-                            </div>
-                        </div>
-                        <div class="enrolled-right">
-                            <span class="enrolled-pct">20%</span>
-                            <a href="#" class="btn-sm">Continue →</a>
-                        </div>
-                    </div>
-
-                </div>
+                @endif
             </div>
 
-            {{-- ── Upcoming Exams ── --}}
             <div class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Upcoming Exams</h2>
-                    <a href="#" class="dash-card-link">View all →</a>
+                    <h2 class="dash-card-title">Recent Quiz Scores</h2>
                 </div>
-                <div class="exam-list">
-
-                    <div class="exam-item exam-soon">
-                        <div class="exam-item-top">
-                            <span class="exam-badge exam-badge-soon">In 2 days</span>
-                            <span class="exam-pts">100 pts</span>
-                        </div>
-                        <div class="exam-item-name">Chemistry Mid-Term</div>
-                        <div class="exam-item-meta">90 min · Organic Chemistry</div>
+                @if($recentQuizAttempts->count() > 0)
+                    <div class="scores-list">
+                        @foreach($recentQuizAttempts as $attempt)
+                            @php
+                                $scoreClass = $attempt->score >= 70 ? 'score-high' : ($attempt->score >= 50 ? 'score-mid' : 'score-low');
+                            @endphp
+                            <div class="score-item">
+                                <div class="score-left">
+                                    <div class="score-name">{{ $attempt->quiz->title }}</div>
+                                    <div class="score-course">{{ $attempt->quiz->course->title ?? 'Course' }}</div>
+                                </div>
+                                <div class="score-badge {{ $scoreClass }}">{{ round($attempt->score) }}</div>
+                            </div>
+                        @endforeach
                     </div>
-
-                    <div class="exam-item">
-                        <div class="exam-item-top">
-                            <span class="exam-badge">In 5 days</span>
-                            <span class="exam-pts">80 pts</span>
-                        </div>
-                        <div class="exam-item-name">Calculus Final</div>
-                        <div class="exam-item-meta">120 min · Advanced Mathematics</div>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>📊</span>
+                        <p>No quiz attempts yet.</p>
+                        <a href="{{ route('student.cours.index') }}" class="btn-sm" style="margin-top: 0.5rem;">Take a quiz →</a>
                     </div>
-
-                    <div class="exam-item">
-                        <div class="exam-item-top">
-                            <span class="exam-badge">In 2 weeks</span>
-                            <span class="exam-pts">60 pts</span>
-                        </div>
-                        <div class="exam-item-name">Biology Quiz #3</div>
-                        <div class="exam-item-meta">45 min · Biology Molecular</div>
-                    </div>
-
-                </div>
+                @endif
             </div>
 
-            {{-- ── Recent Scores ── --}}
             <div class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Recent Scores</h2>
+                    <h2 class="dash-card-title">Course Progress</h2>
                 </div>
-                <div class="scores-list">
-
-                    <div class="score-item">
-                        <div class="score-left">
-                            <div class="score-name">Web Dev Quiz #2</div>
-                            <div class="score-course">Web Development</div>
-                        </div>
-                        <div class="score-badge score-high">94</div>
+                @if($enrolledCourses->count() > 0)
+                    <div class="scores-list">
+                        @foreach($enrolledCourses->take(4) as $course)
+                            @php
+                                $enrollment = $course->enrollments->first();
+                                $progress = $enrollment ? $enrollment->progress_percentage : 0;
+                            @endphp
+                            <div class="score-item">
+                                <div class="score-left">
+                                    <div class="score-name">{{ $course->title }}</div>
+                                    <div class="score-course">{{ $course->chapters->count() }} chapters</div>
+                                </div>
+                                <div class="score-badge" style="background: var(--c-yellow);">{{ $progress }}%</div>
+                            </div>
+                        @endforeach
                     </div>
-
-                    <div class="score-item">
-                        <div class="score-left">
-                            <div class="score-name">Biology Quiz #2</div>
-                            <div class="score-course">Biology Molecular</div>
-                        </div>
-                        <div class="score-badge score-mid">76</div>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>📈</span>
+                        <p>Enroll in a course to see progress.</p>
                     </div>
-
-                    <div class="score-item">
-                        <div class="score-left">
-                            <div class="score-name">Math Mid-Term</div>
-                            <div class="score-course">Advanced Mathematics</div>
-                        </div>
-                        <div class="score-badge score-high">88</div>
-                    </div>
-
-                    <div class="score-item">
-                        <div class="score-left">
-                            <div class="score-name">Web Dev Quiz #1</div>
-                            <div class="score-course">Web Development</div>
-                        </div>
-                        <div class="score-badge score-low">61</div>
-                    </div>
-
-                </div>
+                @endif
             </div>
 
-            {{-- ── Announcements ── --}}
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Latest Announcements</h2>
                     <a href="#" class="dash-card-link">View all →</a>
                 </div>
-                <div class="ann-list">
-
-                    <div class="ann-item">
-                        <div class="ann-left">
-                            <span class="ann-icon">📢</span>
-                            <div>
-                                <div class="ann-title">Assignment deadline extended</div>
-                                <div class="ann-course">Biology Molecular</div>
+                @if($recentAnnouncements->count() > 0)
+                    <div class="ann-list">
+                        @foreach($recentAnnouncements as $ann)
+                            <div class="ann-item">
+                                <div class="ann-left">
+                                    <span class="ann-icon">📢</span>
+                                    <div>
+                                        <div class="ann-title">{{ $ann->title }}</div>
+                                        <div class="ann-course">{{ $ann->course_title ?? 'Course' }}</div>
+                                        <div class="ann-course" style="font-size: 0.7rem; margin-top: 0.25rem;">{{ Str::limit($ann->content, 80) }}</div>
+                                    </div>
+                                </div>
+                                <span class="ann-date">{{ $ann->posted_at->diffForHumans() }}</span>
                             </div>
-                        </div>
-                        <span class="ann-date">2 hours ago</span>
+                        @endforeach
                     </div>
-
-                    <div class="ann-item">
-                        <div class="ann-left">
-                            <span class="ann-icon">📢</span>
-                            <div>
-                                <div class="ann-title">New chapter uploaded: Derivatives</div>
-                                <div class="ann-course">Advanced Mathematics</div>
-                            </div>
-                        </div>
-                        <span class="ann-date">Yesterday</span>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>📢</span>
+                        <p>No announcements yet.</p>
                     </div>
-
-                    <div class="ann-item">
-                        <div class="ann-left">
-                            <span class="ann-icon">📢</span>
-                            <div>
-                                <div class="ann-title">Mid-term exam date confirmed</div>
-                                <div class="ann-course">Organic Chemistry</div>
-                            </div>
-                        </div>
-                        <span class="ann-date">3 days ago</span>
-                    </div>
-
-                    <div class="ann-item">
-                        <div class="ann-left">
-                            <span class="ann-icon">📢</span>
-                            <div>
-                                <div class="ann-title">Lecture notes PDF now available</div>
-                                <div class="ann-course">Web Development</div>
-                            </div>
-                        </div>
-                        <span class="ann-date">1 week ago</span>
-                    </div>
-
-                </div>
+                @endif
             </div>
 
-            {{-- ── Recent Comments ── --}}
             <div class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">My Comments</h2>
+                    <h2 class="dash-card-title">Recent Comments</h2>
                     <a href="#" class="dash-card-link">View all →</a>
                 </div>
                 <div class="comments-list">
-
                     <div class="comment-item">
-                        <div class="comment-avatar">SA</div>
+                        <div class="comment-avatar">💬</div>
                         <div class="comment-body">
-                            <div class="comment-course">Biology Molecular</div>
-                            <div class="comment-text">Can someone explain the difference between mitosis and meiosis
-                                again?</div>
-                            <div class="comment-date">2 days ago</div>
+                            <div class="comment-course">Coming Soon</div>
+                            <div class="comment-text">Comment system will be available soon.</div>
+                            <div class="comment-date">-</div>
                         </div>
                     </div>
-
-                    <div class="comment-item">
-                        <div class="comment-avatar">SA</div>
-                        <div class="comment-body">
-                            <div class="comment-course">Web Development</div>
-                            <div class="comment-text">The Flexbox chapter was really helpful, thanks!</div>
-                            <div class="comment-date">5 days ago</div>
-                        </div>
-                    </div>
-
-                    <div class="comment-item">
-                        <div class="comment-avatar">SA</div>
-                        <div class="comment-body">
-                            <div class="comment-course">Advanced Mathematics</div>
-                            <div class="comment-text">I'm stuck on problem 3 in chapter 4, any hints?</div>
-                            <div class="comment-date">1 week ago</div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
-            {{-- ── Attachments / Resources ── --}}
             <div class="dash-card">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Recent Resources</h2>
                 </div>
                 <div class="attach-list">
-
                     <div class="attach-item">
-                        <div class="attach-type attach-pdf">PDF</div>
+                        <div class="attach-type">📁</div>
                         <div class="attach-info">
-                            <div class="attach-name">Lecture Notes Ch.4</div>
-                            <div class="attach-course">Web Development</div>
+                            <div class="attach-name">Resources coming soon</div>
+                            <div class="attach-course">Check back later</div>
                         </div>
                         <a href="#" class="attach-dl">↓</a>
                     </div>
-
-                    <div class="attach-item">
-                        <div class="attach-type attach-doc">DOC</div>
-                        <div class="attach-info">
-                            <div class="attach-name">Biology Study Guide</div>
-                            <div class="attach-course">Biology Molecular</div>
-                        </div>
-                        <a href="#" class="attach-dl">↓</a>
-                    </div>
-
-                    <div class="attach-item">
-                        <div class="attach-type attach-pdf">PDF</div>
-                        <div class="attach-info">
-                            <div class="attach-name">Calculus Formula Sheet</div>
-                            <div class="attach-course">Advanced Mathematics</div>
-                        </div>
-                        <a href="#" class="attach-dl">↓</a>
-                    </div>
-
-                    <div class="attach-item">
-                        <div class="attach-type attach-vid">VID</div>
-                        <div class="attach-info">
-                            <div class="attach-name">Intro to Reactions</div>
-                            <div class="attach-course">Organic Chemistry</div>
-                        </div>
-                        <a href="#" class="attach-dl">↓</a>
-                    </div>
-
                 </div>
             </div>
-
         </div>
     </main>
 </div>

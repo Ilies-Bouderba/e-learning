@@ -3,15 +3,17 @@
         <a href="{{ route('home') }}" class="sidebar-logo">edu<span>me</span>x</a>
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Overview</span>
-            <a href="{{ route('dashboard.admin') }}" class="sidebar-link"><span class="sidebar-icon">🏠</span>
+            {{-- FIXED: changed from dashboard.admin to admin.dashboard --}}
+            <a href="{{ route('admin.dashboard') }}" class="sidebar-link active"><span class="sidebar-icon">🏠</span>
                 Dashboard</a>
             <span class="sidebar-nav-label">Manage</span>
             <a href="{{ route('admin.teachers') }}" class="sidebar-link"><span class="sidebar-icon">👨‍🏫</span>
                 Teachers</a>
             <a href="{{ route('admin.students') }}" class="sidebar-link"><span class="sidebar-icon">🎓</span>
                 Students</a>
-            <a href="{{ route('admin.departments') }}" class="sidebar-link active"><span class="sidebar-icon">🏛️</span>
+            <a href="{{ route('admin.departments') }}" class="sidebar-link"><span class="sidebar-icon">🏛️</span>
                 Departments</a>
+            {{-- REMOVED any links to courses or quizzes --}}
         </nav>
         <div class="sidebar-user">
             <div class="sidebar-avatar">AD</div>

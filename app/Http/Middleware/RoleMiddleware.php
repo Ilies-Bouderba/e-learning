@@ -7,14 +7,16 @@ use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string ...$roles): mixed
+    public function handle(Request $request, Closure $next, string $role)
     {
         if (!auth()->check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
-
-        if (!in_array(auth()->user()->role, $roles)) {
-            abort(403);
+        if (empty($roles)) {
+            return $next($request);
+        }
+        if (auth()->user()->role !== $role) {
+            abort(403, 'Unauthorized – ' . ucfirst($role) . ' access only.');
         }
 
         return $next($request);

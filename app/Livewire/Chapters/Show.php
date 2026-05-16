@@ -23,13 +23,19 @@ class Show extends Component
             abort(404, 'Chapter not found in this course.');
         }
 
+        // Allow admin to view any chapter
+        if ($user->isAdmin()) {
+            $this->cour = $cour;
+            $this->chapter = $chapter;
+            return;
+        }
+
         // For students: check if they're enrolled
         if ($user->isStudent()) {
             if (! $cour->enrollments()->where('student_id', $user->id)->exists()) {
-                return redirect()->route('cours.enroll', $cour);
+                return redirect()->route('student.cours.enroll', $cour);
             }
         }
-        // For teachers: check if they own the course
         elseif ($user->isTeacher()) {
             if ($cour->teacher_id != $user->id) {
                 abort(403, 'You do not own this course.');

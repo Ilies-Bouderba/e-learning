@@ -18,7 +18,7 @@ class Show extends Component
         $user = auth()->user();
         if ($user->isStudent()) {
             if (! $cour->enrollments()->where('student_id', $user->id)->exists()) {
-                return redirect()->route('cours.enroll', $cour);
+                return redirect()->route('student.cours.enroll', $cour);
             }
         } elseif ($user->isTeacher()) {
             if ($cour->teacher_id != $user->id) {
@@ -26,6 +26,45 @@ class Show extends Component
             }
         }
         $this->cour = $cour;
+    }
+
+    public function toggleChapter($chapterId)
+    {
+        if (!auth()->user()->isStudent()) {
+            return;
+        }
+
+        $chapter = $this->cour->chapters()->findOrFail($chapterId);
+        $existingProgress = StudentProgress::where('student_id', auth()->id())
+            ->where('chapter_id', $chapterId)
+            ->first();
+
+        if ($existingProgress) {
+            $existingProgress->delete();
+        } else {
+            StudentProgress::create([
+                'student_id' => auth()->id(),
+                'chapter_id' => $chapterId,
+                'completed' => true,
+                'completed_at' => now(),
+            ]);
+        }
+
+        $totalChapters = $this->cour->chapters()->count();
+        $completedChapters = StudentProgress::where('student_id', auth()->id())
+            ->whereIn('chapter_id', $this->cour->chapters()->pluck('id'))
+            ->where('completed', true)
+            ->count();
+
+        $progress = $totalChapters > 0 ? round(($completedChapters / $totalChapters) * 100) : 0;
+
+        $enrollment = $this->cour->enrollments()->where('student_id', auth()->id())->first();
+        if ($enrollment) {
+            $enrollment->update(['progress_percentage' => $progress]);
+        }
+
+        $this->cour = $this->cour->fresh();
+        $this->dispatch('progress-updated');
     }
 
     public function deleteChapter($chapterId)

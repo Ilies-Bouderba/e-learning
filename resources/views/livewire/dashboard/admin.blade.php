@@ -3,7 +3,7 @@
         <a href="{{ route('home') }}" class="sidebar-logo">edu<span>me</span>x</a>
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Overview</span>
-            <a href="{{ route('dashboard.admin') }}" class="sidebar-link active"><span class="sidebar-icon">🏠</span>
+            <a href="{{ route('admin.dashboard') }}" class="sidebar-link active"><span class="sidebar-icon">🏠</span>
                 Dashboard</a>
             <span class="sidebar-nav-label">Manage</span>
             <a href="{{ route('admin.teachers') }}" class="sidebar-link"><span class="sidebar-icon">👨‍🏫</span>
@@ -25,7 +25,7 @@
         <div class="dash-header">
             <div>
                 <h1 class="dash-title">Admin Dashboard 👑</h1>
-                <p class="dash-subtitle">Platform overview and management.</p>
+                <p class="dash-subtitle">Platform overview and user management.</p>
             </div>
         </div>
         <div class="dash-stats">
@@ -38,11 +38,6 @@
                 <div class="dsc-icon">🎓</div>
                 <div class="dsc-info"><span class="dsc-num">{{ $totalStudents }}</span><span
                         class="dsc-label">Students</span></div>
-            </div>
-            <div class="dash-stat-card">
-                <div class="dsc-icon">📚</div>
-                <div class="dsc-info"><span class="dsc-num">{{ $totalCourses }}</span><span
-                        class="dsc-label">Courses</span></div>
             </div>
             <div class="dash-stat-card">
                 <div class="dsc-icon">🏛️</div>
@@ -100,31 +95,6 @@
                                 <div class="student-course">{{ $s->enrollments_count }} enrollments ·
                                     {{ $s->email }}</div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <div class="dash-card dash-card-wide">
-                <div class="dash-card-header">
-                    <h2 class="dash-card-title">Recent Courses</h2>
-                </div>
-                <div class="teacher-courses">
-                    @foreach ($recentCourses as $course)
-                        <div class="teacher-course-item">
-                            <div class="tci-left"><span class="tci-icon">{{ $course->icon }}</span>
-                                <div>
-                                    <div class="tci-name">{{ $course->title }}</div>
-                                    <div class="tci-meta">{{ $course->department->name }} ·
-                                        {{ $course->teacher->name }}</div>
-                                </div>
-                            </div>
-                            <div class="tci-stats">
-                                <div class="tci-stat"><span
-                                        class="tci-stat-num">{{ $course->enrollments_count }}</span><span
-                                        class="tci-stat-label">Students</span></div>
-                            </div>
-                            <div class="tci-actions"><a href="{{ route('cours.show', $course) }}" class="btn-sm">View
-                                    →</a></div>
                         </div>
                     @endforeach
                 </div>

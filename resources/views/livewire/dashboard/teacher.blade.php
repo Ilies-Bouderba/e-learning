@@ -3,11 +3,11 @@
         <a href="{{ route('home') }}" class="sidebar-logo">edu<span>me</span>x</a>
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Main</span>
-            <a href="{{ route('dashboard.teacher') }}" class="sidebar-link active"><span class="sidebar-icon">🏠</span>
+            <a href="{{ route('teacher.dashboard') }}" class="sidebar-link active"><span class="sidebar-icon">🏠</span>
                 Dashboard</a>
-            <a href="{{ route('cours.index') }}" class="sidebar-link"><span class="sidebar-icon">📚</span> My Courses</a>
+            <a href="{{ route('teacher.cours.index') }}" class="sidebar-link"><span class="sidebar-icon">📚</span> My Courses</a>
             <span class="sidebar-nav-label">Manage</span>
-            <a href="{{ route('cours.create') }}" class="sidebar-link"><span class="sidebar-icon">➕</span> New
+            <a href="{{ route('teacher.cours.create') }}" class="sidebar-link"><span class="sidebar-icon">➕</span> New
                 Course</a>
         </nav>
         <div class="sidebar-user">
@@ -24,7 +24,7 @@
                 <h1 class="dash-title">Welcome back, {{ auth()->user()->name }} 👋</h1>
                 <p class="dash-subtitle">Here's an overview of your courses and students.</p>
             </div>
-            <a href="{{ route('cours.create') }}" class="btn btn-primary">+ New Course</a>
+            <a href="{{ route('teacher.cours.create') }}" class="btn btn-primary">+ New Course</a>
         </div>
         <div class="dash-stats">
             <div class="dash-stat-card">
@@ -51,7 +51,7 @@
         <div class="dash-grid">
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">My Courses</h2><a href="{{ route('cours.index') }}"
+                    <h2 class="dash-card-title">My Courses</h2><a href="{{ route('teacher.cours.index') }}"
                         class="dash-card-link">Manage all →</a>
                 </div>
                 <div class="teacher-courses">
@@ -74,7 +74,7 @@
                         </div>
                     @empty
                         <div class="mc-empty" style="padding:2rem 0;"><span>📭</span>
-                            <p>No courses yet. <a href="{{ route('cours.create') }}">Create one →</a></p>
+                            <p>No courses yet. <a href="{{ route('teacher.cours.create') }}">Create one →</a></p>
                         </div>
                     @endforelse
                 </div>

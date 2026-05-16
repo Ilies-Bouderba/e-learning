@@ -63,4 +63,9 @@ class Cour extends Model
     {
         return Hash::check($pw, $this->password);
     }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class, 'course_id');
+    }
 }

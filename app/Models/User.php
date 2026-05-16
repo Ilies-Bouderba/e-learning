@@ -77,4 +77,34 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Cour::class, 'enrollments', 'student_id', 'course_id');
     }
+
+    public function courseProgress($courseId)
+    {
+        $totalChapters = Chapter::where('course_id', $courseId)->count();
+        $completedChapters = StudentProgress::where('student_id', $this->id)
+            ->whereHas('chapter', function($q) use ($courseId) {
+                $q->where('course_id', $courseId);
+            })
+            ->where('completed', true)
+            ->count();
+
+        return $totalChapters > 0 ? round(($completedChapters / $totalChapters) * 100) : 0;
+    }
+
+    public function quizProgress($quizId)
+    {
+        $attempt = QuizAttempt::where('student_id', $this->id)
+            ->where('quiz_id', $quizId)
+            ->first();
+
+        if (!$attempt) {
+            return ['status' => 'not_started', 'score' => null, 'percentage' => 0];
+        }
+
+        if (!$attempt->completed_at) {
+            return ['status' => 'in_progress', 'score' => null, 'percentage' => 0];
+        }
+
+        return ['status' => 'completed', 'score' => $attempt->score, 'percentage' => round($attempt->score)];
+    }
 }

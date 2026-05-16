@@ -3,7 +3,9 @@
 namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class Student extends Component
 {
     public function render()
