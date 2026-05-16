@@ -646,6 +646,7 @@ class ComposerStaticInit53b5d56b3b7e3cbac1713e68c8850f6c
         'App\\Livewire\\Admin\\ManageTeachers' => __DIR__ . '/../..' . '/app/Livewire/Admin/ManageTeachers.php',
         'App\\Livewire\\Announcements\\Create' => __DIR__ . '/../..' . '/app/Livewire/Announcements/Create.php',
         'App\\Livewire\\Announcements\\Index' => __DIR__ . '/../..' . '/app/Livewire/Announcements/Index.php',
+        'App\\Livewire\\Announcements\\StudentIndex' => __DIR__ . '/../..' . '/app/Livewire/Announcements/StudentIndex.php',
         'App\\Livewire\\Auth\\Login' => __DIR__ . '/../..' . '/app/Livewire/Auth/Login.php',
         'App\\Livewire\\Chapter' => __DIR__ . '/../..' . '/app/Livewire/Chapter.php',
         'App\\Livewire\\Chapters\\Create' => __DIR__ . '/../..' . '/app/Livewire/Chapters/Create.php',

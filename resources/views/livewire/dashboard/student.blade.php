@@ -3,28 +3,18 @@
         <a href="/" class="sidebar-logo">edu<span>me</span>x</a>
         <nav class="sidebar-nav">
             <span class="sidebar-nav-label">Main</span>
-            {{-- FIXED: changed from dashboard.student to student.dashboard --}}
             <a href="{{ route('student.dashboard') }}" class="sidebar-link active">
                 <span class="sidebar-icon">🏠</span> Dashboard
             </a>
             <a href="{{ route('student.cours.index') }}" class="sidebar-link">
                 <span class="sidebar-icon">📚</span> My Courses
             </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">📝</span> Exams
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">📊</span> Progress
-            </a>
             <span class="sidebar-nav-label">Other</span>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('student.all-announcements') }}" class="sidebar-link">
                 <span class="sidebar-icon">📢</span> Announcements
             </a>
             <a href="#" class="sidebar-link">
                 <span class="sidebar-icon">💬</span> Comments
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">⚙️</span> Settings
             </a>
         </nav>
         <div class="sidebar-user">
@@ -74,6 +64,7 @@
                 ->take(4)
                 ->get();
 
+            // Recent announcements from enrolled courses
             $recentAnnouncements = [];
             foreach($enrolledCourses as $course) {
                 foreach($course->announcements()->latest('posted_at')->take(2)->get() as $ann) {
@@ -82,6 +73,24 @@
                 }
             }
             $recentAnnouncements = collect($recentAnnouncements)->sortByDesc('posted_at')->take(4);
+
+            // Recent comments from enrolled courses (course-level comments)
+            $recentComments = \App\Models\Comment::whereIn('course_id', $enrolledCourses->pluck('id'))
+                ->with(['student', 'course'])
+                ->latest('posted_at')
+                ->take(5)
+                ->get();
+
+            // Recent resources (attachments) from chapters of enrolled courses
+            $courseIds = $enrolledCourses->pluck('id');
+            $recentResources = \App\Models\Attachment::whereHas('chapter.course', function($q) use ($courseIds) {
+                $q->whereIn('course_id', $courseIds);
+            })->with('chapter.course')->latest()->take(5)->get();
+
+            // Recent chapter comments from enrolled courses
+            $recentChapterComments = \App\Models\ChapterComment::whereHas('chapter.course', function($q) use ($courseIds) {
+                $q->whereIn('course_id', $courseIds);
+            })->with(['student', 'chapter.course'])->latest()->take(5)->get();
         @endphp
 
         <div class="dash-stats">
@@ -214,7 +223,7 @@
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Latest Announcements</h2>
-                    <a href="#" class="dash-card-link">View all →</a>
+                    <a href="{{ route('student.all-announcements') }}" class="dash-card-link">View all →</a>
                 </div>
                 @if($recentAnnouncements->count() > 0)
                     <div class="ann-list">
@@ -240,37 +249,91 @@
                 @endif
             </div>
 
+            <!-- Recent Comments Section (Course-Level) -->
             <div class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Recent Comments</h2>
+                    <h2 class="dash-card-title">Recent Course Comments</h2>
                     <a href="#" class="dash-card-link">View all →</a>
                 </div>
-                <div class="comments-list">
-                    <div class="comment-item">
-                        <div class="comment-avatar">💬</div>
-                        <div class="comment-body">
-                            <div class="comment-course">Coming Soon</div>
-                            <div class="comment-text">Comment system will be available soon.</div>
-                            <div class="comment-date">-</div>
-                        </div>
+                @if($recentComments->count() > 0)
+                    <div class="comments-list">
+                        @foreach($recentComments as $comment)
+                            <div class="comment-item">
+                                <div class="comment-avatar">{{ strtoupper(substr($comment->student->name, 0, 2)) }}</div>
+                                <div class="comment-body">
+                                    <div class="comment-course">{{ $comment->course->title }}</div>
+                                    <div class="comment-text">{{ Str::limit($comment->comment_text, 90) }}</div>
+                                    <div class="comment-date">{{ $comment->posted_at->diffForHumans() }}</div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>💬</span>
+                        <p>No course comments yet.</p>
+                    </div>
+                @endif
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="#" class="btn-sm">Go to course to comment →</a>
                 </div>
             </div>
 
+            <!-- Recent Chapter Comments Section -->
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h2 class="dash-card-title">💬 Recent Chapter Discussions</h2>
+                </div>
+                @if($recentChapterComments->count() > 0)
+                    <div class="comments-list">
+                        @foreach($recentChapterComments as $comment)
+                            <div class="comment-item" style="padding: 0.75rem 0; border-bottom: 1px solid rgba(15,14,23,0.08);">
+                                <div style="display: flex; gap: 0.75rem;">
+                                    <div class="comment-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--c-dark); color: var(--c-yellow); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0;">
+                                        {{ strtoupper(substr($comment->student->name, 0, 2)) }}
+                                    </div>
+                                    <div class="comment-body" style="flex: 1;">
+                                        <div style="font-weight: 700; font-size: 0.8rem;">{{ $comment->student->name }}</div>
+                                        <div style="font-size: 0.7rem; color: var(--c-muted);">on {{ $comment->chapter->course->title }} · Chapter {{ $comment->chapter->chapter_number }}</div>
+                                        <div style="font-size: 0.8rem; margin-top: 0.25rem;">{{ Str::limit($comment->comment_text, 80) }}</div>
+                                        <a href="{{ route('chapters.show', ['cour' => $comment->chapter->course, 'chapter' => $comment->chapter]) }}" class="btn-sm" style="margin-top: 0.5rem; font-size: 0.7rem;">View Discussion →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>💬</span>
+                        <p>No chapter comments yet. Start a discussion!</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Recent Resources Section -->
             <div class="dash-card">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Recent Resources</h2>
                 </div>
-                <div class="attach-list">
-                    <div class="attach-item">
-                        <div class="attach-type">📁</div>
-                        <div class="attach-info">
-                            <div class="attach-name">Resources coming soon</div>
-                            <div class="attach-course">Check back later</div>
-                        </div>
-                        <a href="#" class="attach-dl">↓</a>
+                @if($recentResources->count() > 0)
+                    <div class="attach-list">
+                        @foreach($recentResources as $resource)
+                            <div class="attach-item">
+                                <div class="attach-type attach-{{ $resource->type }}">{{ strtoupper($resource->type) }}</div>
+                                <div class="attach-info">
+                                    <div class="attach-name">{{ $resource->title }}</div>
+                                    <div class="attach-course">{{ $resource->chapter->course->title }} · Chapter {{ $resource->chapter->chapter_number }}</div>
+                                </div>
+                                <a href="{{ asset('storage/' . $resource->file_path) }}" class="attach-dl" target="_blank" download>↓</a>
+                            </div>
+                        @endforeach
                     </div>
-                </div>
+                @else
+                    <div class="mc-empty" style="padding: 2rem;">
+                        <span>📁</span>
+                        <p>No resources available yet.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </main>

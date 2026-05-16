@@ -94,9 +94,10 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
 
 // ========== STUDENT ROUTES ==========
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', Student::class)->name('dashboard');
-    Route::get('/cours', StudentCourses::class)->name('cours.index');
-    Route::get('/cours/{cour}/enroll', Enroll::class)->name('cours.enroll');
-    Route::get('/cours/{cour}/quizzes', StudentQuizIndex::class)->name('quizzes.index');
-    Route::get('/cours/{cour}/quizzes/{quiz}/take', QuizTake::class)->name('quizzes.take');
+    Route::get('/dashboard', \App\Livewire\Dashboard\Student::class)->name('dashboard');
+    Route::get('/cours', \App\Livewire\Cours\StudentCourses::class)->name('cours.index');
+    Route::get('/cours/{cour}/enroll', \App\Livewire\Enroll::class)->name('cours.enroll');
+    Route::get('/cours/{cour}/quizzes', \App\Livewire\Quizzes\StudentQuizIndex::class)->name('quizzes.index');
+    Route::get('/cours/{cour}/quizzes/{quiz}/take', \App\Livewire\Quizzes\Take::class)->name('quizzes.take');
+    Route::get('/announcements', \App\Livewire\Announcements\StudentIndex::class)->name('all-announcements');
 });

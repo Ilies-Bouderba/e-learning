@@ -21,9 +21,15 @@
 
         @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
             <span class="sidebar-nav-label">Manage</span>
-            <a href="{{ route('teacher.chapters.create', $cour) }}" class="sidebar-link"><span class="sidebar-icon">➕</span> Add Chapter</a>
-            <a href="{{ route('teacher.announcements.create', $cour) }}" class="sidebar-link"><span class="sidebar-icon">📣</span> Post Announcement</a>
-            <a href="{{ route('teacher.quizzes.create', $cour) }}" class="sidebar-link"><span class="sidebar-icon">✍️</span> Create Quiz</a>
+            <a href="{{ route('teacher.chapters.create', $cour) }}" class="sidebar-link">
+                <span class="sidebar-icon">➕</span> Add Chapter
+            </a>
+            <a href="{{ route('teacher.announcements.create', $cour) }}" class="sidebar-link">
+                <span class="sidebar-icon">📣</span> Post Announcement
+            </a>
+            <a href="{{ route('teacher.quizzes.create', $cour) }}" class="sidebar-link">
+                <span class="sidebar-icon">✍️</span> Create Quiz
+            </a>
             <a href="{{ route('teacher.cours.edit', $cour) }}" class="sidebar-link {{ $active == 'edit' ? 'active' : '' }}">
                 <span class="sidebar-icon">✏️</span> Edit Course
             </a>

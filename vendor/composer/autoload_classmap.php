@@ -13,6 +13,7 @@ return array(
     'App\\Livewire\\Admin\\ManageTeachers' => $baseDir . '/app/Livewire/Admin/ManageTeachers.php',
     'App\\Livewire\\Announcements\\Create' => $baseDir . '/app/Livewire/Announcements/Create.php',
     'App\\Livewire\\Announcements\\Index' => $baseDir . '/app/Livewire/Announcements/Index.php',
+    'App\\Livewire\\Announcements\\StudentIndex' => $baseDir . '/app/Livewire/Announcements/StudentIndex.php',
     'App\\Livewire\\Auth\\Login' => $baseDir . '/app/Livewire/Auth/Login.php',
     'App\\Livewire\\Chapter' => $baseDir . '/app/Livewire/Chapter.php',
     'App\\Livewire\\Chapters\\Create' => $baseDir . '/app/Livewire/Chapters/Create.php',
