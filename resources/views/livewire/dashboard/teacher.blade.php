@@ -108,15 +108,21 @@
                 </div>
                 <div class="exam-list">
                     @forelse($upcomingExams as $exam)
-                        <div class="exam-item {{ $exam->scheduled_date->diffInDays(now()) <= 3 ? 'exam-soon' : '' }}">
-                            <div class="exam-item-top"><span
-                                    class="exam-badge {{ $exam->scheduled_date->diffInDays(now()) <= 3 ? 'exam-badge-soon' : '' }}">{{ $exam->scheduled_date->diffForHumans() }}</span><span
-                                    class="exam-pts">{{ $exam->total_score }} pts</span></div>
+                        <div class="exam-item {{ ($exam->start_date && $exam->start_date->diffInDays(now()) <= 3) ? 'exam-soon' : '' }}">
+                            <div class="exam-item-top">
+                                <span class="exam-badge {{ ($exam->start_date && $exam->start_date->diffInDays(now()) <= 3) ? 'exam-badge-soon' : '' }}">
+                                    {{ $exam->start_date ? $exam->start_date->diffForHumans() : 'No date set' }}
+                                </span>
+                                <span class="exam-pts">{{ $exam->total_score }} pts</span>
+                            </div>
                             <div class="exam-item-name">{{ $exam->title }}</div>
-                            <div class="exam-item-meta">{{ $exam->duration_minutes }} min · {{ $exam->course->title }}
+                            <div class="exam-item-meta">
+                                @if($exam->duration_minutes) {{ $exam->duration_minutes }} min · @endif
+                                {{ $exam->course->title }}
                             </div>
                         </div>
-                    @empty<p class="empty-msg">No upcoming exams.</p>
+                    @empty
+                        <p class="empty-msg">No upcoming exams.</p>
                     @endforelse
                 </div>
             </div>
@@ -131,10 +137,11 @@
                             <div class="comment-body">
                                 <div class="comment-course">{{ $comment->course->title }}</div>
                                 <div class="comment-text">{{ Str::limit($comment->comment_text, 90) }}</div>
-                                <div class="comment-date">{{ $comment->posted_at->diffForHumans() }}</div>
+                                <div class="comment-date">{{ $comment->posted_at ? $comment->posted_at->diffForHumans() : 'Unknown date' }}</div>
                             </div>
                         </div>
-                    @empty<p class="empty-msg">No comments yet.</p>
+                    @empty
+                        <p class="empty-msg">No comments yet.</p>
                     @endforelse
                 </div>
             </div>
@@ -149,11 +156,12 @@
                                 <div>
                                     <div class="ann-title">{{ $ann->title }}</div>
                                     <div class="ann-course">{{ $ann->course->title }}</div>
+                                    <div class="ann-date">{{ $ann->posted_at ? $ann->posted_at->diffForHumans() : 'Unknown date' }}</div>
                                 </div>
                             </div>
-                            <span class="ann-date">{{ $ann->posted_at->diffForHumans() }}</span>
                         </div>
-                    @empty<p class="empty-msg">No announcements yet.</p>
+                    @empty
+                        <p class="empty-msg">No announcements yet.</p>
                     @endforelse
                 </div>
             </div>

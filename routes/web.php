@@ -3,19 +3,19 @@
 use App\Livewire\Home;
 use App\Livewire\Auth\Login;
 use App\Livewire\Enroll;
-use App\Livewire\Cours\Create;
+use App\Livewire\Cours\Create as CreateCour;
 use App\Livewire\Cours\EditCour;
 use App\Livewire\Cours\ManageCours;
 use App\Livewire\Cours\StudentCourses;
-use App\Livewire\Cours\Show;
-use App\Livewire\Dashboard\Teacher;
-use App\Livewire\Dashboard\Student;
-use App\Livewire\Dashboard\Admin;
-use App\Livewire\Announcements\Create as AnnouncementCreate;
-use App\Livewire\Announcements\Index as AnnouncementIndex;
-use App\Livewire\Chapters\Create as ChapterCreate;
-use App\Livewire\Chapters\Show as ChapterShow;
-use App\Livewire\Chapters\Edit as ChapterEdit;
+use App\Livewire\Cours\Show as ShowCour;
+use App\Livewire\Dashboard\Teacher as TeacherDashboard;
+use App\Livewire\Dashboard\Student as StudentDashboard;
+use App\Livewire\Dashboard\Admin as AdminDashboard;
+use App\Livewire\Announcements\Create as CreateAnnouncement;
+use App\Livewire\Announcements\Index as AnnouncementsIndex;
+use App\Livewire\Chapters\Create as CreateChapter;
+use App\Livewire\Chapters\Show as ShowChapter;
+use App\Livewire\Chapters\Edit as EditChapter;
 use App\Livewire\Admin\ManageTeachers;
 use App\Livewire\Admin\ManageStudents;
 use App\Livewire\Admin\ManageDepartments;
@@ -25,6 +25,12 @@ use App\Livewire\Quizzes\Edit as QuizEdit;
 use App\Livewire\Quizzes\Show as QuizShow;
 use App\Livewire\Quizzes\Take as QuizTake;
 use App\Livewire\Quizzes\StudentQuizIndex;
+use App\Livewire\Exams\Index as ExamIndex;
+use App\Livewire\Exams\Create as ExamCreate;
+use App\Livewire\Exams\Edit as ExamEdit;
+use App\Livewire\Exams\Show as ExamShow;
+use App\Livewire\Exams\Take as ExamTake;
+use App\Livewire\Announcements\StudentIndex as StudentAnnouncements;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -64,15 +70,22 @@ Route::middleware('auth')->group(function () {
 
 // ========== SHARED VIEW ROUTES (accessible by all authenticated users) ==========
 Route::middleware('auth')->group(function () {
-    Route::get('/cours/{cour}', Show::class)->name('cours.show');
-    Route::get('/cours/{cour}/chapters/{chapter}', ChapterShow::class)->name('chapters.show');
-    Route::get('/cours/{cour}/announcements', AnnouncementIndex::class)->name('announcements.index');
-    Route::get('/cours/{cour}/quizzes/{quiz}', QuizShow::class)->name('quizzes.show');
+    Route::get('/cours/{cour}', \App\Livewire\Cours\Show::class)->name('cours.show');
+    Route::get('/cours/{cour}/chapters/{chapter}', \App\Livewire\Chapters\Show::class)->name('chapters.show');
+    Route::get('/cours/{cour}/announcements', \App\Livewire\Announcements\Index::class)->name('announcements.index');
+    Route::get('/cours/{cour}/quizzes/{quiz}', \App\Livewire\Quizzes\Show::class)->name('quizzes.show');
+    Route::get('/cours/{cour}/exams/{exam}', \App\Livewire\Exams\Show::class)->name('exams.show');
+
+    // STUDENT exam listing (view all exams to take)
+    Route::get('/cours/{cour}/exams', \App\Livewire\Exams\StudentIndex::class)->name('exams.index');
+
+    // STUDENT take exam
+    Route::get('/cours/{cour}/exams/{exam}/take', \App\Livewire\Exams\Take::class)->name('exams.take');
 });
 
 // ========== ADMIN ROUTES ==========
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', Admin::class)->name('dashboard');
+    Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
     Route::get('/teachers', ManageTeachers::class)->name('teachers');
     Route::get('/students', ManageStudents::class)->name('students');
     Route::get('/departments', ManageDepartments::class)->name('departments');
@@ -80,24 +93,31 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // ========== TEACHER ROUTES ==========
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
-    Route::get('/dashboard', Teacher::class)->name('dashboard');
-    Route::get('/cours', ManageCours::class)->name('cours.index');
-    Route::get('/cours/create', Create::class)->name('cours.create');
-    Route::get('/cours/{cour}/edit', EditCour::class)->name('cours.edit');
-    Route::get('/cours/{cour}/chapters/create', ChapterCreate::class)->name('chapters.create');
-    Route::get('/cours/{cour}/chapters/{chapter}/edit', ChapterEdit::class)->name('chapters.edit');
-    Route::get('/cours/{cour}/announcements/create', AnnouncementCreate::class)->name('announcements.create');
-    Route::get('/cours/{cour}/quizzes', QuizIndex::class)->name('quizzes.index');
-    Route::get('/cours/{cour}/quizzes/create', QuizCreate::class)->name('quizzes.create');
-    Route::get('/cours/{cour}/quizzes/{quiz}/edit', QuizEdit::class)->name('quizzes.edit');
+    Route::get('/dashboard', \App\Livewire\Dashboard\Teacher::class)->name('dashboard');
+    Route::get('/cours', \App\Livewire\Cours\ManageCours::class)->name('cours.index');
+    Route::get('/cours/create', \App\Livewire\Cours\Create::class)->name('cours.create');
+    Route::get('/cours/{cour}/edit', \App\Livewire\Cours\EditCour::class)->name('cours.edit');
+    Route::get('/cours/{cour}/chapters/create', \App\Livewire\Chapters\Create::class)->name('chapters.create');
+    Route::get('/cours/{cour}/chapters/{chapter}/edit', \App\Livewire\Chapters\Edit::class)->name('chapters.edit');
+    Route::get('/cours/{cour}/announcements/create', \App\Livewire\Announcements\Create::class)->name('announcements.create');
+    Route::get('/cours/{cour}/quizzes', \App\Livewire\Quizzes\Index::class)->name('quizzes.index');
+    Route::get('/cours/{cour}/quizzes/create', \App\Livewire\Quizzes\Create::class)->name('quizzes.create');
+    Route::get('/cours/{cour}/quizzes/{quiz}/edit', \App\Livewire\Quizzes\Edit::class)->name('quizzes.edit');
+
+    // TEACHER exam management
+    Route::get('/cours/{cour}/exams', \App\Livewire\Exams\Index::class)->name('exams.index');
+    Route::get('/cours/{cour}/exams/create', \App\Livewire\Exams\Create::class)->name('exams.create');
+    Route::get('/cours/{cour}/exams/{exam}/edit', \App\Livewire\Exams\Edit::class)->name('exams.edit');
 });
 
 // ========== STUDENT ROUTES ==========
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', \App\Livewire\Dashboard\Student::class)->name('dashboard');
-    Route::get('/cours', \App\Livewire\Cours\StudentCourses::class)->name('cours.index');
-    Route::get('/cours/{cour}/enroll', \App\Livewire\Enroll::class)->name('cours.enroll');
-    Route::get('/cours/{cour}/quizzes', \App\Livewire\Quizzes\StudentQuizIndex::class)->name('quizzes.index');
-    Route::get('/cours/{cour}/quizzes/{quiz}/take', \App\Livewire\Quizzes\Take::class)->name('quizzes.take');
-    Route::get('/announcements', \App\Livewire\Announcements\StudentIndex::class)->name('all-announcements');
+    Route::get('/dashboard', StudentDashboard::class)->name('dashboard');
+    Route::get('/cours', StudentCourses::class)->name('cours.index');
+    Route::get('/cours/{cour}/enroll', Enroll::class)->name('cours.enroll');
+    Route::get('/cours/{cour}/quizzes', StudentQuizIndex::class)->name('quizzes.index');
+    Route::get('/cours/{cour}/exams', \App\Livewire\Exams\StudentIndex::class)->name('exams.index');
+    Route::get('/cours/{cour}/quizzes/{quiz}/take', QuizTake::class)->name('quizzes.take');
+    Route::get('/cours/{cour}/exams/{exam}/take', \App\Livewire\Exams\Take::class)->name('exams.take');
+    Route::get('/announcements', StudentAnnouncements::class)->name('all-announcements');
 });

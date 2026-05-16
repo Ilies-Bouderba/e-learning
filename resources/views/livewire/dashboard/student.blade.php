@@ -17,14 +17,6 @@
                 <span class="sidebar-icon">💬</span> Comments
             </a>
         </nav>
-        <div class="sidebar-user">
-            <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-            <div class="sidebar-user-info">
-                <span class="sidebar-user-name">{{ auth()->user()->name }}</span>
-                <span class="sidebar-user-role">Student</span>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="sidebar-logout" title="Logout">↩</button></form>
-        </div>
     </aside>
 
     <main class="dash-main">

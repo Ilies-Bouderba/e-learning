@@ -24,9 +24,10 @@ class Teacher extends Component
             'totalExams' => Exam::whereIn('course_id', $courseIds)->count(),
             'totalComments' => Comment::whereIn('course_id', $courseIds)->count(),
             'recentStudents' => Enrollment::with(['student', 'course'])->whereIn('course_id', $courseIds)->latest()->take(6)->get(),
-            'upcomingExams' => Exam::whereIn('course_id', $courseIds)->where('scheduled_date', '>=', now())->orderBy('scheduled_date')->take(4)->with('course')->get(),
+            'upcomingExams' => Exam::whereIn('course_id', $courseIds)->where('start_date', '>=', now())->orderBy('start_date')->take(4)->with('course')->get(),
             'recentAnnouncements' => Announcement::whereIn('course_id', $courseIds)->latest('posted_at')->take(5)->with('course')->get(),
             'recentComments' => Comment::whereIn('course_id', $courseIds)->latest('posted_at')->take(5)->with(['student', 'course'])->get(),
         ]);
     }
 }
+    

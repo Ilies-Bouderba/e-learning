@@ -63,14 +63,14 @@ class Show extends Component
             'newComment' => 'required|string|min:2|max:1000',
         ]);
 
-        if (!auth()->user()->isStudent()) {
-            session()->flash('error', 'Only students can comment.');
+        if (!auth()->user()->isStudent() && !auth()->user()->isTeacher()) {
+            session()->flash('error', 'Only students and teachers can comment.');
             return;
         }
 
         ChapterComment::create([
             'chapter_id' => $this->chapter->id,
-            'student_id' => auth()->id(),
+            'student_id' => auth()->id(), // This field name is misleading but it stores user_id
             'comment_text' => $this->newComment,
         ]);
 
@@ -79,19 +79,15 @@ class Show extends Component
         session()->flash('success', 'Comment added!');
     }
 
-    public function toggleReplyForm($commentId)
-    {
-        $this->showReplyForm[$commentId] = !($this->showReplyForm[$commentId] ?? false);
-    }
-
     public function addReply($commentId)
     {
         $this->validate([
             "replyText.{$commentId}" => 'required|string|min:2|max:500',
         ]);
 
-        if (!auth()->user()->isStudent()) {
-            session()->flash('error', 'Only students can reply.');
+        // Allow both students AND teachers to reply
+        if (!auth()->user()->isStudent() && !auth()->user()->isTeacher()) {
+            session()->flash('error', 'Only students and teachers can reply.');
             return;
         }
 
@@ -105,6 +101,11 @@ class Show extends Component
         $this->showReplyForm[$commentId] = false;
         $this->loadComments();
         session()->flash('success', 'Reply added!');
+    }
+
+    public function toggleReplyForm($commentId)
+    {
+        $this->showReplyForm[$commentId] = !($this->showReplyForm[$commentId] ?? false);
     }
 
     public function render()

@@ -286,7 +286,7 @@
 
             <!-- CREATE COMMENT -->
             @auth
-                @if(auth()->user()->isStudent())
+                @if(auth()->user()->isStudent() || auth()->user()->isTeacher())
 
                     <div class="discussion-create">
 

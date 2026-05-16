@@ -148,11 +148,126 @@
                     @empty
                         <p class="empty-msg">No quizzes available yet.</p>
                     @endforelse
-                    @if($cour->quizzes()->count() > 3)
+                    @if($cour->quizzes()->where('is_published', true)->count() > 3)
                         <div style="margin-top: 1rem; text-align: center;">
                             <a href="{{ route('teacher.quizzes.index', $cour) }}" class="btn-sm">View all quizzes →</a>
                         </div>
                     @endif
+                </div>
+            </div>
+
+            <!-- Exams Section -->
+            <div class="dash-card" style="margin-top: 2rem;">
+                <div class="dash-card-header">
+                    <h2 class="dash-card-title">📝 Exams</h2>
+                    @php
+                        $visibleExamsCount = 0;
+                        if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id()) {
+                            $visibleExamsCount = $cour->exams()->count();
+                        } else {
+                            $visibleExamsCount = $cour->exams()->where('is_published', true)
+                                ->where(function($q) {
+                                    $q->whereNull('end_date')
+                                      ->orWhere('end_date', '>=', now());
+                                })->count();
+                        }
+                    @endphp
+                    @if($visibleExamsCount > 0)
+                        @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+                            <a href="{{ route('teacher.exams.index', $cour) }}" class="dash-card-link">Manage Exams →</a>
+                        @else
+                            <a href="{{ route('exams.index', $cour) }}" class="dash-card-link">View all →</a>
+                        @endif
+                    @endif
+                </div>
+                <div class="exam-list">
+                    @php
+                        // Get published exams for students, all exams for teachers
+                        if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id()) {
+                            $exams = $cour->exams()->latest()->take(3)->get();
+                        } else {
+                            // For students, only show exams that are NOT closed (available or upcoming)
+                            $exams = $cour->exams()
+                                ->where('is_published', true)
+                                ->where(function($q) {
+                                    $q->whereNull('end_date')
+                                      ->orWhere('end_date', '>=', now());
+                                })
+                                ->latest()
+                                ->take(3)
+                                ->get();
+                        }
+                    @endphp
+                    @forelse($exams as $exam)
+                        @php
+                            $attempt = null;
+                            $status = 'not_started';
+                            $isAvailable = false;
+                            $isClosed = false;
+                            $isUpcoming = false;
+
+                            if(auth()->user()->isStudent()) {
+                                $attempt = \App\Models\ExamAttempt::where('student_id', auth()->id())
+                                    ->where('exam_id', $exam->id)
+                                    ->first();
+                                $status = $attempt ? ($attempt->completed_at ? 'completed' : 'in_progress') : 'not_started';
+
+                                // Check availability
+                                $now = now();
+                                if($exam->end_date && $now->gt($exam->end_date)) {
+                                    $isClosed = true;
+                                } elseif($exam->start_date && $now->lt($exam->start_date)) {
+                                    $isUpcoming = true;
+                                } else {
+                                    $isAvailable = true;
+                                }
+                            }
+                        @endphp
+                        <div class="exam-item" style="padding: 1rem; border-bottom: 1px solid rgba(15,14,23,0.08); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="exam-title" style="font-weight: 700;">{{ $exam->title }}</div>
+                                <div style="font-size: 0.75rem; color: var(--c-muted);">{{ $exam->questions->count() }} questions • {{ $exam->total_score }} points</div>
+                                @if($exam->duration_minutes)
+                                    <div style="font-size: 0.7rem; color: var(--c-muted);">⏱️ {{ $exam->duration_minutes }} minutes</div>
+                                @endif
+                                @if($isClosed)
+                                    <div style="font-size: 0.7rem; color: #ef4444; margin-top: 0.25rem;">🔒 Closed</div>
+                                @elseif($isUpcoming && $exam->start_date)
+                                    <div style="font-size: 0.7rem; color: #f59e0b; margin-top: 0.25rem;">Starts {{ $exam->start_date->format('M j, g:i A') }}</div>
+                                @endif
+                                @if(auth()->user()->isStudent() && $status == 'completed')
+                                    <div style="font-size: 0.7rem; color: #10b981; margin-top: 0.25rem;">Score: {{ $exam->total_score > 0 ? round(($attempt->total_score / $exam->total_score) * 100) : 0 }}%</div>
+                                @elseif(auth()->user()->isStudent() && $status == 'in_progress')
+                                    <div style="font-size: 0.7rem; color: #f59e0b; margin-top: 0.25rem;">In Progress</div>
+                                @endif
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                @if(auth()->user()->isStudent())
+                                    @if($isClosed)
+                                        <span class="btn-sm" style="background: #e5e7eb; cursor: not-allowed;">Closed</span>
+                                    @elseif($isUpcoming)
+                                        <span class="btn-sm" style="background: #e5e7eb; cursor: not-allowed;">Coming Soon</span>
+                                    @elseif($status == 'completed')
+                                        <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                                    @elseif($status == 'in_progress')
+                                        <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Continue →</a>
+                                    @else
+                                        <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Start Exam →</a>
+                                    @endif
+                                @elseif(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+                                    <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                                    <a href="{{ route('teacher.exams.edit', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">Edit</a>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <p class="empty-msg">No exams available yet.</p>
+                        @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+                            <div style="margin-top: 1rem; text-align: center;">
+                                <a href="{{ route('teacher.exams.create', $cour) }}" class="btn-sm btn-primary">Create your first exam →</a>
+                            </div>
+                        @endif
+                    @endforelse
                 </div>
             </div>
 
@@ -174,7 +289,7 @@
                                 <div class="ann-course">{{ Str::limit($ann->content, 60) }}</div>
                             </div>
                         </div>
-                        <span class="ann-date">{{ $ann->posted_at->diffForHumans() }}</span>
+                        <span class="ann-date">{{ $ann->posted_at ? $ann->posted_at->diffForHumans() : 'Unknown date' }}</span>
                     </div>
                     @empty
                     <p class="empty-msg">No announcements yet.</p>

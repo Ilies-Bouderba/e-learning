@@ -30,6 +30,9 @@
             <a href="{{ route('teacher.quizzes.create', $cour) }}" class="sidebar-link">
                 <span class="sidebar-icon">✍️</span> Create Quiz
             </a>
+            <a href="{{ route('teacher.exams.create', $cour) }}" class="sidebar-link">
+                <span class="sidebar-icon">📝</span> Create Exam
+            </a>
             <a href="{{ route('teacher.cours.edit', $cour) }}" class="sidebar-link {{ $active == 'edit' ? 'active' : '' }}">
                 <span class="sidebar-icon">✏️</span> Edit Course
             </a>
