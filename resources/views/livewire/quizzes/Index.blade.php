@@ -1,14 +1,14 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="quizzes" />
+    <livewire:course-sidebar :course="$course" active="quizzes" />
 
     <main class="dash-main">
         <div class="dash-header">
             <div>
-                <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                <h1 class="dash-title">{{ $cour->title }} - Quizzes</h1>
+                <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                <h1 class="dash-title">{{ $course->title }} - Quizzes</h1>
                 <p class="dash-subtitle">Manage your course quizzes</p>
             </div>
-            <a href="{{ route('teacher.quizzes.create', $cour) }}" class="btn btn-primary">+ Create New Quiz</a>
+            <a href="{{ route('teacher.quizzes.create', $course) }}" class="btn btn-primary">+ Create New Quiz</a>
         </div>
 
         @if(session('success'))
@@ -46,8 +46,8 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
-                        <a href="{{ route('teacher.quizzes.edit', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">Edit</a>
-                        <a href="{{ route('quizzes.show', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
+                        <a href="{{ route('teacher.quizzes.edit', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">Edit</a>
+                        <a href="{{ route('quizzes.show', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
                         <button class="btn-sm btn-{{ $quiz->is_published ? 'warning' : 'success' }}" wire:click="togglePublish({{ $quiz->id }})">
                             {{ $quiz->is_published ? 'Unpublish' : 'Publish' }}
                         </button>
@@ -59,7 +59,7 @@
             <div class="mc-empty">
                 <span>📝</span>
                 <p>No quizzes created yet.</p>
-                <a href="{{ route('quizzes.create', $cour) }}" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Quiz →</a>
+                <a href="{{ route('quizzes.create', $course) }}" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Quiz →</a>
             </div>
             @endforelse
         </div>

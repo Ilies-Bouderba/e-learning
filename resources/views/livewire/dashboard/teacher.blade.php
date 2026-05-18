@@ -133,11 +133,11 @@
                 <div class="comments-list">
                     @forelse($recentComments as $comment)
                         <div class="comment-item">
-                            <div class="comment-avatar">{{ strtoupper(substr($comment->student->name, 0, 2)) }}</div>
-                            <div class="comment-body">
-                                <div class="comment-course">{{ $comment->course->title }}</div>
+                        <div class="comment-avatar">{{ strtoupper(substr($comment->author->name ?? 'U', 0, 2)) }}</div>
+                        <div class="comment-body">
+                            <div class="comment-course">{{ $comment->chapter->title ?? 'Unknown chapter' }}</div>
                                 <div class="comment-text">{{ Str::limit($comment->comment_text, 90) }}</div>
-                                <div class="comment-date">{{ $comment->posted_at ? $comment->posted_at->diffForHumans() : 'Unknown date' }}</div>
+                                <div class="comment-date">{{ $comment->created_at ? $comment->created_at->diffForHumans() : 'Unknown date' }}</div>
                             </div>
                         </div>
                     @empty

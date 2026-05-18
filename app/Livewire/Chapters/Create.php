@@ -4,7 +4,7 @@ namespace App\Livewire\Chapters;
 
 use App\Models\Attachment;
 use App\Models\Chapter;
-use App\Models\Cour;
+use App\Models\Course;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -14,77 +14,69 @@ class Create extends Component
 {
     use WithFileUploads;
 
-    public Cour $cour;
-
-    public string $title = '';
-
-    public string $content = '';
-
-    public int $chapter_number = 1;
-
-    public array $attachments = [];
+    public Course $course;
+    public string $title          = '';
+    public string $content        = '';
+    public int    $chapter_number = 1;
+    public array  $attachments    = [];
 
     protected array $rules = [
-        'title' => 'required|string|max:255',
-        'content' => 'nullable|string',
-        'chapter_number' => 'required|integer|min:1',
-        'attachments.*.file' => 'nullable|file|max:10240',
-        'attachments.*.title' => 'required_with:attachments.*.file|string|max:255',
-        'attachments.*.type' => 'required|in:pdf,video,image,other',
+        'title'                    => 'required|string|max:255',
+        'content'                  => 'nullable|string',
+        'chapter_number'           => 'required|integer|min:1',
+        'attachments.*.file'       => 'nullable|file|max:10240',
+        'attachments.*.title'      => 'required_with:attachments.*.file|string|max:255',
+        'attachments.*.type'       => 'required|in:pdf,video,image,other',
     ];
 
-    public function mount(Cour $cour)
+    public function mount(Course $course): void
     {
-        if (! auth()->user()->isTeacher()) {
-            abort(403);
-        }
-        if ($cour->teacher_id != auth()->id()) {
+        $user = auth()->user();
+
+        if (! $user->isTeacher() || (int) $course->teacher_id !== (int) $user->id) {
             abort(403);
         }
 
-        $this->cour = $cour;
-        $this->chapter_number = $cour->chapters()->count() + 1;
+        $this->course         = $course;
+        $this->chapter_number = $course->chapters()->count() + 1;
     }
 
-    public function addAttachment()
+    public function addAttachment(): void
     {
         $this->attachments[] = ['file' => null, 'title' => '', 'type' => 'pdf'];
     }
 
-    public function removeAttachment($index)
+    public function removeAttachment(int $index): void
     {
         unset($this->attachments[$index]);
         $this->attachments = array_values($this->attachments);
     }
 
-    public function save()
+    public function save(): mixed
     {
         $this->validate();
 
-        // Create the chapter
         $chapter = Chapter::create([
-            'course_id' => $this->cour->id,
-            'title' => $this->title,
-            'content' => $this->content,
+            'course_id'      => $this->course->id,
+            'title'          => $this->title,
+            'content'        => $this->content,
             'chapter_number' => $this->chapter_number,
         ]);
 
-        // Save attachments
-        foreach ($this->attachments as $attachment) {
-            if (isset($attachment['file']) && $attachment['file']) {
-                $path = $attachment['file']->store('attachments', 'public');
+        foreach ($this->attachments as $item) {
+            if (! empty($item['file'])) {
+                $path = $item['file']->store('attachments', 'public');
                 Attachment::create([
                     'chapter_id' => $chapter->id,
-                    'title' => $attachment['title'],
-                    'type' => $attachment['type'],
-                    'file_path' => $path,
+                    'title'      => $item['title'],
+                    'type'       => $item['type'],
+                    'file_path'  => $path,
                 ]);
             }
         }
 
-        session()->flash('success', 'Chapter added with '.count($this->attachments).' attachments.');
-
-        return redirect()->route('cours.show', $this->cour);
+        session()->flash('success', 'Chapter added successfully.');
+        return redirect()->route('cours.show', $this->course);
     }
 
     public function render()

@@ -2,7 +2,7 @@
     <div class="dash-layout" style="grid-template-columns: 1fr;">
         <main class="dash-main" style="padding: 1.5rem;">
             <div class="quiz-header" style="margin-bottom: 2rem;">
-                <a href="{{ route('cours.show', $cour) }}" class="cc-back">← Back to Course</a>
+                <a href="{{ route('cours.show', $course) }}" class="cc-back">← Back to Course</a>
                 <h1 class="cc-title" style="margin-top: 1rem;">{{ $exam->title }}</h1>
                 <p class="cc-sub">{{ $exam->description }}</p>
                 @if($exam->duration_minutes)

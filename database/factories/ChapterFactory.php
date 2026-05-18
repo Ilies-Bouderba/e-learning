@@ -3,26 +3,21 @@
 namespace Database\Factories;
 
 use App\Models\Chapter;
-use App\Models\Cour;
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Chapter>
- */
+/** @extends Factory<Chapter> */
 class ChapterFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Chapter::class;
+
     public function definition(): array
     {
         return [
-            'course_id' => Cour::factory(),
-            'title' => fake()->sentence(3),
+            'course_id'      => Course::factory(),
+            'title'          => fake()->sentence(3),
             'chapter_number' => fake()->numberBetween(1, 20),
-            'content' => fake()->paragraphs(3, true),
+            'content'        => fake()->paragraphs(3, true),
         ];
     }
 }

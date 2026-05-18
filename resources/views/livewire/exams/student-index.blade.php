@@ -2,15 +2,15 @@
     <main class="dash-main">
         <div class="course-show-header">
             <div class="csh-left">
-                <div class="csh-icon">{{ $cour->icon }}</div>
+                <div class="csh-icon">{{ $course->icon }}</div>
                 <div>
-                    <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                    <h1 class="csh-title">{{ $cour->title }} - Exams</h1>
+                    <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                    <h1 class="csh-title">{{ $course->title }} - Exams</h1>
                     <p class="csh-desc">All available exams for this course</p>
                 </div>
             </div>
             <div class="csh-actions">
-                <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">← Back to Course</a>
+                <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">← Back to Course</a>
             </div>
         </div>
 
@@ -42,11 +42,11 @@
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
                         @if($status == 'completed')
-                            <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                            <a href="{{ route('exams.show', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
                         @elseif($status == 'in_progress')
-                            <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Continue →</a>
+                            <a href="{{ route('student.exams.take', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm btn-primary">Continue →</a>
                         @else
-                            <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Start Exam →</a>
+                            <a href="{{ route('student.exams.take', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm btn-primary">Start Exam →</a>
                         @endif
                     </div>
                 </div>

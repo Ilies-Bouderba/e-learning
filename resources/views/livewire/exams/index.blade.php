@@ -1,14 +1,14 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="exams" />
+    <livewire:course-sidebar :course="$course" active="exams" />
 
     <main class="dash-main">
         <div class="dash-header">
             <div>
-                <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                <h1 class="dash-title">{{ $cour->title }} - Exams</h1>
+                <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                <h1 class="dash-title">{{ $course->title }} - Exams</h1>
                 <p class="dash-subtitle">Manage your course exams</p>
             </div>
-            <a href="{{ route('teacher.exams.create', $cour) }}" class="btn btn-primary">+ Create New Exam</a>
+            <a href="{{ route('teacher.exams.create', $course) }}" class="btn btn-primary">+ Create New Exam</a>
         </div>
 
         @if(session('success'))
@@ -47,8 +47,8 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
-                        <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
-                        <a href="{{ route('teacher.exams.edit', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">Edit</a>
+                        <a href="{{ route('exams.show', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                        <a href="{{ route('teacher.exams.edit', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">Edit</a>
                         <button class="btn-sm btn-{{ $exam->is_published ? 'warning' : 'success' }}" wire:click="togglePublish({{ $exam->id }})">
                             {{ $exam->is_published ? 'Unpublish' : 'Publish' }}
                         </button>
@@ -60,7 +60,7 @@
             <div class="mc-empty">
                 <span>📝</span>
                 <p>No exams created yet.</p>
-                <a href="{{ route('teacher.exams.create', $cour) }}" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Exam →</a>
+                <a href="{{ route('teacher.exams.create', $course) }}" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Exam →</a>
             </div>
             @endforelse
         </div>

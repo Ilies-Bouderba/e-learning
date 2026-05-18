@@ -3,9 +3,9 @@
         <main class="dash-main">
             <div class="course-show-header">
                 <div class="csh-left">
-                    <div class="csh-icon">{{ $cour->icon }}</div>
+                    <div class="csh-icon">{{ $course->icon }}</div>
                     <div>
-                        <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
+                        <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
                         <h1 class="csh-title">{{ $quiz->title }} - Results</h1>
                         <p class="csh-desc">Your quiz results and answers</p>
                     </div>
@@ -82,27 +82,25 @@
                 @endforeach
 
                 <div style="margin-top: 2rem; padding-top: 1rem; text-align: center;">
-                    <a href="{{ route('cours.show', $cour) }}" class="btn btn-primary">Back to Course</a>
+                    <a href="{{ route('cours.show', $course) }}" class="btn btn-primary">Back to Course</a>
                 </div>
             </div>
         </main>
     </div>
 @elseif(auth()->user()->isTeacher())
     <div class="dash-layout">
-        <livewire:course-sidebar :cour="$cour" active="quizzes" />
+        <livewire:course-sidebar :course="$course" active="quizzes" />
 
         <main class="dash-main">
             <div class="dash-header">
                 <div>
-                    <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
+                    <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
                     <h1 class="dash-title">{{ $quiz->title }}</h1>
                     <p class="dash-subtitle">{{ $quiz->description ?: 'Quiz results and analytics' }}</p>
                 </div>
                 <div style="display: flex; gap: 0.75rem;">
-                    {{-- FIXED: use teacher.quizzes.edit instead of quizzes.edit --}}
-                    <a href="{{ route('teacher.quizzes.edit', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn btn-primary">Edit Quiz</a>
-                    {{-- FIXED: use teacher.quizzes.index instead of quizzes.index --}}
-                    <a href="{{ route('teacher.quizzes.index', $cour) }}" class="btn btn-ghost">← Back</a>
+                    <a href="{{ route('teacher.quizzes.edit', ['course' => $course, 'quiz' => $quiz]) }}" class="btn btn-primary">Edit Quiz</a>
+                    <a href="{{ route('teacher.quizzes.index', $course) }}" class="btn btn-ghost">← Back</a>
                 </div>
             </div>
 

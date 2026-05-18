@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Cours;
 
-use App\Models\Cour;
+use App\Models\Course;
 use App\Models\Enrollment;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -10,26 +10,26 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Enroll extends Component
 {
-    public Cour $cour;
+    public Course $course;
     public string $password = '';
 
-    public function enroll()
+    public function enroll(): mixed
     {
-        if ($this->cour->hasPassword() && ! $this->cour->checkPassword($this->password)) {
+        if ($this->course->hasPassword() && ! $this->course->checkPassword($this->password)) {
             $this->addError('password', 'Wrong course password.');
-            return;
+            return null;
         }
 
         Enrollment::create([
             'student_id' => auth()->id(),
-            'course_id' => $this->cour->id,
+            'course_id'  => $this->course->id,
         ]);
 
-        return redirect()->route('cours.show', $this->cour);
+        return redirect()->route('cours.show', $this->course);
     }
 
     public function render()
     {
-        return view('livewire.enroll');
+        return view('livewire.cours.enroll');
     }
 }

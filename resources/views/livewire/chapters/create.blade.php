@@ -1,13 +1,13 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="chapters" />
+    <livewire:course-sidebar :course="$course" active="chapters" />
 
     <main class="dash-main">
         <div class="create-course-page">
             <div class="container" style="max-width: 100%; padding: 0;">
                 <div class="cc-header">
-                    <a href="{{ route('cours.show', $cour) }}" class="cc-back">← Back to Course</a>
+                    <a href="{{ route('cours.show', $course) }}" class="cc-back">← Back to Course</a>
                     <div>
-                        <span class="section-tag">{{ $cour->icon }} {{ $cour->title }}</span>
+                        <span class="section-tag">{{ $course->icon }} {{ $course->title }}</span>
                         <h1 class="cc-title">Add New Chapter</h1>
                         <p class="cc-sub">Chapter {{ $chapter_number }} of your course</p>
                     </div>
@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="cc-actions" style="margin-top: 2rem;">
-                        <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">Cancel</a>
+                        <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">Cancel</a>
                         <button type="submit" class="btn btn-primary btn-lg">
                             <span wire:loading.remove wire:target="save">Create Chapter →</span>
                             <span wire:loading wire:target="save">Creating...</span>

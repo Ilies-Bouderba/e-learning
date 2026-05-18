@@ -1,14 +1,14 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="chapters" />
+    <livewire:course-sidebar :course="$course" active="chapters" />
 
     <main class="dash-main">
         <div class="create-course-page">
             <div class="container" style="max-width: 100%; padding: 0;">
                 <div class="cc-header">
-                    <a href="{{ route('chapters.show', ['cour' => $cour, 'chapter' => $chapter]) }}" class="cc-back">←
+                    <a href="{{ route('chapters.show', ['course' => $course, 'chapter' => $chapter]) }}" class="cc-back">←
                         Back to Chapter</a>
                     <div>
-                        <span class="section-tag">{{ $cour->icon }} {{ $cour->title }}</span>
+                        <span class="section-tag">{{ $course->icon }} {{ $course->title }}</span>
                         <h1 class="cc-title">Edit Chapter: {{ $chapter->title }}</h1>
                         <p class="cc-sub">Update content and attachments</p>
                     </div>
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="cc-actions" style="margin-top: 2rem;">
-                        <a href="{{ route('chapters.show', ['cour' => $cour, 'chapter' => $chapter]) }}"
+                        <a href="{{ route('chapters.show', ['course' => $course, 'chapter' => $chapter]) }}"
                             class="btn btn-ghost">Cancel</a>
                         <button type="submit" class="btn btn-primary btn-lg">
                             <span wire:loading.remove wire:target="save">Save Changes →</span>

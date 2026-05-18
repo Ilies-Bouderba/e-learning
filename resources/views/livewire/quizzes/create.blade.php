@@ -1,13 +1,13 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="quizzes" />
+    <livewire:course-sidebar :course="$course" active="quizzes" />
 
     <main class="dash-main">
         <div class="create-course-page">
             <div class="container" style="max-width: 100%; padding: 0;">
                 <div class="cc-header" style="margin-bottom: 2rem;">
-                    <a href="{{ route('teacher.quizzes.index', $cour) }}" class="cc-back">← Back to Quizzes</a>
+                    <a href="{{ route('teacher.quizzes.index', $course) }}" class="cc-back">← Back to Quizzes</a>
                     <div>
-                        <span class="section-tag">{{ $cour->icon }} {{ $cour->title }}</span>
+                        <span class="section-tag">{{ $course->icon }} {{ $course->title }}</span>
                         <h1 class="cc-title">Create New Quiz</h1>
                         <p class="cc-sub">Design your quiz with questions and answers</p>
                     </div>
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="cc-actions" style="margin-top: 2rem; padding-top: 1rem; border-top: 1.5px solid rgba(15,14,23,0.1);">
-                        <a href="{{ route('teacher.quizzes.index', $cour) }}" class="btn btn-ghost">Cancel</a>
+                        <a href="{{ route('teacher.quizzes.index', $course) }}" class="btn btn-ghost">Cancel</a>
                         <button type="submit" class="btn btn-primary btn-lg">
                             <span wire:loading.remove wire:target="saveQuiz">Create Quiz →</span>
                             <span wire:loading wire:target="saveQuiz">Creating...</span>

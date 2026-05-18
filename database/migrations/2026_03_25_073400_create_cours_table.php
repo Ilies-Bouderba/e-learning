@@ -4,28 +4,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Creates: cours, announcements, enrollments.
+ * NOTE: The original migration also created a `comments` table that was never
+ * used in the application (chapter_comments replaced it). That table is omitted.
+ */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        // Create cours table first
         Schema::create('cours', function (Blueprint $table) {
             $table->id();
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('department_id')
-                ->constrained('departments')
-                ->onDelete('cascade');
-            $table->string('icon')->default('📚');
+            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
+            $table->string('icon', 10)->default('📚');
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('password')->nullable();
             $table->timestamps();
         });
 
-        // Create announcements table
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')->constrained('cours')->onDelete('cascade');
@@ -35,7 +33,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Create enrollments table - NO CASCADE on course_id to avoid multiple cascade paths
+        // NO CASCADE on course_id to avoid multiple SQL Server cascade paths
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
@@ -45,24 +43,10 @@ return new class extends Migration
             $table->unique(['student_id', 'course_id']);
             $table->timestamps();
         });
-
-        // Create comments table - NO CASCADE on course_id
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('course_id')->constrained('cours')->onDelete('no action');
-            $table->text('comment_text');
-            $table->timestamp('posted_at')->useCurrent();
-            $table->timestamps();
-        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
         Schema::dropIfExists('enrollments');
         Schema::dropIfExists('announcements');
         Schema::dropIfExists('cours');

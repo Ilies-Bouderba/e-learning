@@ -348,3 +348,6 @@ select.cc-input {
     font-size: 0.8rem;
     color: var(--c-muted);
 }
+
+/* ── Edit course — same system, number input width ── */
+.cc-input[type="number"] { max-width: 120px; }

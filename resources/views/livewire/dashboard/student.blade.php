@@ -66,20 +66,18 @@
             }
             $recentAnnouncements = collect($recentAnnouncements)->sortByDesc('posted_at')->take(4);
 
-            // Recent comments from enrolled courses (course-level comments)
-            $recentComments = \App\Models\Comment::whereIn('course_id', $enrolledCourses->pluck('id'))
-                ->with(['student', 'course'])
-                ->latest('posted_at')
+            $chapterIds = $enrolledCourses->flatMap(fn($c) => $c->chapters)->pluck('id');
+            $recentComments = \App\Models\ChapterComment::whereIn('chapter_id', $chapterIds)
+                ->with(['author', 'chapter'])
+                ->latest()
                 ->take(5)
                 ->get();
 
-            // Recent resources (attachments) from chapters of enrolled courses
             $courseIds = $enrolledCourses->pluck('id');
             $recentResources = \App\Models\Attachment::whereHas('chapter.course', function($q) use ($courseIds) {
                 $q->whereIn('course_id', $courseIds);
             })->with('chapter.course')->latest()->take(5)->get();
 
-            // Recent chapter comments from enrolled courses
             $recentChapterComments = \App\Models\ChapterComment::whereHas('chapter.course', function($q) use ($courseIds) {
                 $q->whereIn('course_id', $courseIds);
             })->with(['student', 'chapter.course'])->latest()->take(5)->get();

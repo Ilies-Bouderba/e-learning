@@ -16,7 +16,8 @@ class CommentReply extends Model
         return $this->belongsTo(ChapterComment::class, 'chapter_comment_id');
     }
 
-    public function student()
+    /** The user who posted the reply */
+    public function author()
     {
         return $this->belongsTo(User::class, 'student_id');
     }

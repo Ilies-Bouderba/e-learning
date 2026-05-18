@@ -6,13 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
-class Cour extends Model
+/**
+ * Renamed from Cour → Course for clarity.
+ * The underlying table stays 'cours' to avoid a migration change.
+ */
+class Course extends Model
 {
     use HasFactory;
 
+    protected $table    = 'cours';
     protected $fillable = ['teacher_id', 'department_id', 'icon', 'title', 'description', 'password'];
+    protected $hidden   = ['password'];
 
-    protected $hidden = ['password'];
+    // ── Relationships ─────────────────────────────────────────────────────────
 
     public function teacher()
     {
@@ -27,11 +33,6 @@ class Cour extends Model
     public function chapters()
     {
         return $this->hasMany(Chapter::class, 'course_id')->orderBy('chapter_number');
-    }
-
-    public function exams()
-    {
-        return $this->hasMany(Exam::class, 'course_id');
     }
 
     public function announcements()
@@ -49,23 +50,25 @@ class Cour extends Model
         return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'student_id');
     }
 
-    public function comments()
+    public function quizzes()
     {
-        return $this->hasMany(Comment::class, 'course_id');
+        return $this->hasMany(Quiz::class, 'course_id');
     }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'course_id');
+    }
+
+    // ── Password helpers ──────────────────────────────────────────────────────
 
     public function hasPassword(): bool
     {
         return ! is_null($this->password);
     }
 
-    public function checkPassword(string $pw): bool
+    public function checkPassword(string $password): bool
     {
-        return Hash::check($pw, $this->password);
-    }
-
-    public function quizzes()
-    {
-        return $this->hasMany(Quiz::class, 'course_id');
+        return Hash::check($password, $this->password);
     }
 }

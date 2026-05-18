@@ -1,20 +1,20 @@
 <div x-data="{ open: false, selected: null }">
     <div class="dash-layout">
-        <livewire:course-sidebar :cour="$cour" active="chapters" />
+        <livewire:course-sidebar :course="$course" active="chapters" />
 
         <main class="dash-main">
             <div class="course-show-header">
                 <div class="csh-left">
-                    <div class="csh-icon">{{ $cour->icon }}</div>
+                    <div class="csh-icon">{{ $course->icon }}</div>
                     <div>
-                        <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                        <h1 class="csh-title">{{ $cour->title }}</h1>
-                        <p class="csh-desc">{{ $cour->description }}</p>
+                        <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                        <h1 class="csh-title">{{ $course->title }}</h1>
+                        <p class="csh-desc">{{ $course->description }}</p>
                         <div class="csh-meta">
-                            <span>👨‍🏫 {{ $cour->teacher->name }}</span>
-                            <span>📖 {{ $cour->chapters->count() }} chapters</span>
-                            <span>📝 {{ $cour->exams->count() }} exams</span>
-                            @if($cour->hasPassword())<span>🔒 Password protected</span>@endif
+                            <span>👨‍🏫 {{ $course->teacher->name }}</span>
+                            <span>📖 {{ $course->chapters->count() }} chapters</span>
+                            <span>📝 {{ $course->exams->count() }} exams</span>
+                            @if($course->hasPassword())<span>🔒 Password protected</span>@endif
                         </div>
                     </div>
                 </div>
@@ -31,9 +31,9 @@
                         <div class="dash-card-header">
                             <h2 class="dash-card-title">Your Progress</h2>
                             @php
-                                $totalChapters = $cour->chapters->count();
+                                $totalChapters = $course->chapters->count();
                                 $completedChapters = \App\Models\StudentProgress::where('student_id', auth()->id())
-                                    ->whereIn('chapter_id', $cour->chapters->pluck('id'))
+                                    ->whereIn('chapter_id', $course->chapters->pluck('id'))
                                     ->where('completed', true)
                                     ->count();
                                 $progressPercent = $totalChapters > 0 ? round(($completedChapters / $totalChapters) * 100) : 0;
@@ -57,11 +57,11 @@
             <div class="dash-card dash-card-wide">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Chapters</h2>
-                    @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                        <a href="{{ route('teacher.chapters.create', $cour) }}" class="dash-card-link">+ Add Chapter</a>
+                    @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                        <a href="{{ route('teacher.chapters.create', $course) }}" class="dash-card-link">+ Add Chapter</a>
                     @endif
                 </div>
-                @forelse($cour->chapters as $chapter)
+                @forelse($course->chapters as $chapter)
                     @php
                         $isCompleted = false;
                         if(auth()->user()->isStudent()) {
@@ -86,9 +86,10 @@
                                        @if($isCompleted) checked @endif
                                        style="width: 18px; height: 18px; cursor: pointer; margin-right: 0.5rem;">
                             @endif
-                            <a href="{{ route('chapters.show', ['cour' => $cour, 'chapter' => $chapter]) }}" class="btn-sm">View →</a>
-                            @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                                <a href="{{ route('teacher.chapters.edit', ['cour' => $cour, 'chapter' => $chapter]) }}" class="btn-sm">Edit</a>
+                            <a href="{{ route('chapters.show', ['course' => $course, 'chapter' => $chapter]) }}" class="btn-sm">View →</a>
+                            @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                                <a href="{{ route('teacher.chapters.edit', ['course' => $course, 'chapter' => $chapter]) }}" class="btn-sm">Edit</a>
+
                                 <button class="btn-sm btn-danger" wire:click="deleteChapter({{ $chapter->id }})" wire:confirm="Delete this chapter?">Delete</button>
                             @endif
                         </div>
@@ -102,13 +103,13 @@
             <div class="dash-card" style="margin-top: 2rem;">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Quizzes</h2>
-                    @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                        <a href="{{ route('teacher.quizzes.create', $cour) }}" class="dash-card-link">+ Create Quiz</a>
+                    @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                        <a href="{{ route('teacher.quizzes.create', $course) }}" class="dash-card-link">+ Create Quiz</a>
                     @endif
                 </div>
                 <div class="quiz-list">
                     @php
-                        $quizzes = $cour->quizzes()->where('is_published', true)->latest()->take(3)->get();
+                        $quizzes = $course->quizzes()->where('is_published', true)->latest()->take(3)->get();
                     @endphp
                     @forelse($quizzes as $quiz)
                         @php
@@ -133,24 +134,24 @@
                             <div style="display: flex; gap: 0.5rem;">
                                 @if(auth()->user()->isStudent())
                                     @if($status == 'completed')
-                                        <a href="{{ route('quizzes.show', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
+                                        <a href="{{ route('quizzes.show', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
                                     @elseif($status == 'in_progress')
-                                        <a href="{{ route('student.quizzes.take', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm btn-primary">Continue →</a>
+                                        <a href="{{ route('student.quizzes.take', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm btn-primary">Continue →</a>
                                     @else
-                                        <a href="{{ route('student.quizzes.take', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm btn-primary">Start →</a>
+                                        <a href="{{ route('student.quizzes.take', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm btn-primary">Start →</a>
                                     @endif
-                                @elseif(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                                    <a href="{{ route('quizzes.show', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">View</a>
-                                    <a href="{{ route('teacher.quizzes.edit', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">Edit</a>
+                                @elseif(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                                    <a href="{{ route('quizzes.show', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">View</a>
+                                    <a href="{{ route('teacher.quizzes.edit', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">Edit</a>
                                 @endif
                             </div>
                         </div>
                     @empty
                         <p class="empty-msg">No quizzes available yet.</p>
                     @endforelse
-                    @if($cour->quizzes()->where('is_published', true)->count() > 3)
+                    @if($course->quizzes()->where('is_published', true)->count() > 3)
                         <div style="margin-top: 1rem; text-align: center;">
-                            <a href="{{ route('teacher.quizzes.index', $cour) }}" class="btn-sm">View all quizzes →</a>
+                            <a href="{{ route('teacher.quizzes.index', $course) }}" class="btn-sm">View all quizzes →</a>
                         </div>
                     @endif
                 </div>
@@ -162,10 +163,10 @@
                     <h2 class="dash-card-title">📝 Exams</h2>
                     @php
                         $visibleExamsCount = 0;
-                        if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id()) {
-                            $visibleExamsCount = $cour->exams()->count();
+                        if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id()) {
+                            $visibleExamsCount = $course->exams()->count();
                         } else {
-                            $visibleExamsCount = $cour->exams()->where('is_published', true)
+                            $visibleExamsCount = $course->exams()->where('is_published', true)
                                 ->where(function($q) {
                                     $q->whereNull('end_date')
                                       ->orWhere('end_date', '>=', now());
@@ -173,21 +174,19 @@
                         }
                     @endphp
                     @if($visibleExamsCount > 0)
-                        @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                            <a href="{{ route('teacher.exams.index', $cour) }}" class="dash-card-link">Manage Exams →</a>
+                        @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                            <a href="{{ route('teacher.exams.index', $course) }}" class="dash-card-link">Manage Exams →</a>
                         @else
-                            <a href="{{ route('exams.index', $cour) }}" class="dash-card-link">View all →</a>
+                            <a href="{{ route('student.exams.index', $course) }}" class="dash-card-link">View all →</a>
                         @endif
                     @endif
                 </div>
                 <div class="exam-list">
                     @php
-                        // Get published exams for students, all exams for teachers
-                        if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id()) {
-                            $exams = $cour->exams()->latest()->take(3)->get();
+                        if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id()) {
+                            $exams = $course->exams()->latest()->take(3)->get();
                         } else {
-                            // For students, only show exams that are NOT closed (available or upcoming)
-                            $exams = $cour->exams()
+                            $exams = $course->exams()
                                 ->where('is_published', true)
                                 ->where(function($q) {
                                     $q->whereNull('end_date')
@@ -248,23 +247,23 @@
                                     @elseif($isUpcoming)
                                         <span class="btn-sm" style="background: #e5e7eb; cursor: not-allowed;">Coming Soon</span>
                                     @elseif($status == 'completed')
-                                        <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                                        <a href="{{ route('exams.show', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
                                     @elseif($status == 'in_progress')
-                                        <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Continue →</a>
+                                        <a href="{{ route('student.exams.take', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm btn-primary">Continue →</a>
                                     @else
-                                        <a href="{{ route('exams.take', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm btn-primary">Start Exam →</a>
+                                        <a href="{{ route('student.exams.take', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm btn-primary">Start Exam →</a>
                                     @endif
-                                @elseif(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                                    <a href="{{ route('exams.show', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
-                                    <a href="{{ route('teacher.exams.edit', ['cour' => $cour, 'exam' => $exam]) }}" class="btn-sm">Edit</a>
+                                @elseif(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                                    <a href="{{ route('exams.show', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">View Results</a>
+                                    <a href="{{ route('teacher.exams.edit', ['course' => $course, 'exam' => $exam]) }}" class="btn-sm">Edit</a>
                                 @endif
                             </div>
                         </div>
                     @empty
                         <p class="empty-msg">No exams available yet.</p>
-                        @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+                        @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
                             <div style="margin-top: 1rem; text-align: center;">
-                                <a href="{{ route('teacher.exams.create', $cour) }}" class="btn-sm btn-primary">Create your first exam →</a>
+                                <a href="{{ route('teacher.exams.create', $course) }}" class="btn-sm btn-primary">Create your first exam →</a>
                             </div>
                         @endif
                     @endforelse
@@ -275,12 +274,12 @@
             <div class="dash-card" style="margin-top: 2rem;">
                 <div class="dash-card-header">
                     <h2 class="dash-card-title">Latest Announcements</h2>
-                    @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                        <a href="{{ route('teacher.announcements.create', $cour) }}" class="dash-card-link">+ Post</a>
+                    @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                        <a href="{{ route('teacher.announcements.create', $course) }}" class="dash-card-link">+ Post</a>
                     @endif
                 </div>
                 <div class="ann-list">
-                    @forelse($cour->announcements->sortByDesc('posted_at')->take(3) as $ann)
+                    @forelse($course->announcements->sortByDesc('posted_at')->take(3) as $ann)
                     <div class="ann-item" style="cursor: pointer;" @click="selected = {{ json_encode($ann) }}; open = true">
                         <div class="ann-left">
                             <span class="ann-icon">📢</span>
@@ -294,9 +293,9 @@
                     @empty
                     <p class="empty-msg">No announcements yet.</p>
                     @endforelse
-                    @if($cour->announcements->count() > 3)
+                    @if($course->announcements->count() > 3)
                         <div style="margin-top: 1rem; text-align: center;">
-                            <a href="{{ route('announcements.index', $cour) }}" class="btn-sm">View all →</a>
+                            <a href="{{ route('announcements.index', $course) }}" class="btn-sm">View all →</a>
                         </div>
                     @endif
                 </div>

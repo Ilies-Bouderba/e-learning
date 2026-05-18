@@ -1,7 +1,0 @@
-/* ============================================================
-   cours/edit.css — edit course page (same system as create)
-   ============================================================ */
-
-.cc-input[type="number"] {
-    max-width: 120px;
-}

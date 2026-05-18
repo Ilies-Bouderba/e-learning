@@ -1,5 +1,5 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="chapters" />
+    <livewire:course-sidebar :course="$course" active="chapters" />
 
     <main class="dash-main">
 
@@ -188,12 +188,12 @@
 
         <div class="course-show-header">
             <div class="csh-left">
-                <div class="csh-icon">{{ $cour->icon }}</div>
+                <div class="csh-icon">{{ $course->icon }}</div>
 
                 <div>
                     <div class="csh-dept">
-                        {{ $cour->department->icon }}
-                        {{ $cour->department->name }}
+                        {{ $course->department->icon }}
+                        {{ $course->department->name }}
                     </div>
 
                     <h1 class="csh-title">
@@ -202,14 +202,14 @@
 
                     <p class="csh-desc">
                         Chapter {{ $chapter->chapter_number }}
-                        of {{ $cour->title }}
+                        of {{ $course->title }}
                     </p>
                 </div>
             </div>
 
-            @if (auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+            @if (auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
                 <div class="csh-actions">
-                    <a href="{{ route('teacher.chapters.edit', ['cour' => $cour, 'chapter' => $chapter]) }}"
+                    <a href="{{ route('teacher.chapters.edit', ['course' => $course, 'chapter' => $chapter]) }}"
                         class="btn btn-primary">
                         Edit Chapter
                     </a>
@@ -327,12 +327,12 @@
                             <div class="comment-user">
 
                                 <div class="comment-avatar">
-                                    {{ strtoupper(substr($comment->student->name, 0, 2)) }}
+                                    {{ strtoupper(substr($comment->author->name ?? 'U', 0, 2)) }}
                                 </div>
 
                                 <div>
                                     <div class="comment-name">
-                                        {{ $comment->student->name }}
+                                        {{ $comment->author->name ?? 'Unknown' }}
                                     </div>
 
                                     <div class="comment-date">
@@ -465,7 +465,7 @@
         </div>
 
         <div class="dash-card" style="margin-top: 1.5rem;">
-            <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">
+            <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">
                 ← Back to Course
             </a>
         </div>

@@ -2,43 +2,42 @@
 
 namespace App\Livewire\Exams;
 
-use App\Models\Cour;
-use Livewire\Component;
+use App\Models\Course;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class StudentIndex extends Component
 {
-    public Cour $cour;
-    public $exams = [];
+    public Course $course;
+    public        $exams = [];
 
-    public function mount(Cour $cour)
+    public function mount(Course $course): mixed
     {
         $user = auth()->user();
 
-        // Allow both students and teachers to view exams
         if ($user->isStudent()) {
-            if (!$cour->enrollments()->where('student_id', $user->id)->exists()) {
-                return redirect()->route('student.cours.enroll', $cour);
+            if (! $course->enrollments()->where('student_id', $user->id)->exists()) {
+                return redirect()->route('student.cours.enroll', $course);
             }
-            $this->exams = $cour->exams()
+
+            $this->exams = $course->exams()
                 ->where('is_published', true)
                 ->with('questions')
                 ->latest()
                 ->get();
         } elseif ($user->isTeacher()) {
-            if ($cour->teacher_id != $user->id) {
+            if ((int) $course->teacher_id !== (int) $user->id) {
                 abort(403);
             }
-            $this->exams = $cour->exams()
-                ->with('questions')
-                ->latest()
-                ->get();
+
+            $this->exams = $course->exams()->with('questions')->latest()->get();
         } else {
             abort(403);
         }
 
-        $this->cour = $cour;
+        $this->course = $course;
+        return null;
     }
 
     public function render()

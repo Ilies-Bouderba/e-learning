@@ -11,18 +11,18 @@ class Exam extends Model
 
     protected $fillable = [
         'course_id', 'title', 'description', 'duration_minutes',
-        'start_date', 'end_date', 'total_score', 'is_published'
+        'start_date', 'end_date', 'total_score', 'is_published',
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'start_date'   => 'datetime',
+        'end_date'     => 'datetime',
         'is_published' => 'boolean',
     ];
 
     public function course()
     {
-        return $this->belongsTo(Cour::class, 'course_id');
+        return $this->belongsTo(Course::class, 'course_id');
     }
 
     public function questions()
@@ -35,9 +35,9 @@ class Exam extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
-    public function calculateTotalPoints()
+    public function recalculateTotalPoints(): int
     {
-        $total = $this->questions()->sum('points');
+        $total = (int) $this->questions()->sum('points');
         $this->update(['total_score' => $total]);
         return $total;
     }

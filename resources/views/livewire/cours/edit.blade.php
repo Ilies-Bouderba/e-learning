@@ -88,7 +88,7 @@
                 <div class="course-card">
                     <div class="course-card-header">
                         <span class="course-card-icon">{{ $icon }}</span>
-                        <span class="chapters-count">{{ $cour->chapters()->count() }} chapters</span>
+                        <span class="chapters-count">{{ $course->chapters()->count() }} chapters</span>
                     </div>
                     <h3 class="course-card-title">{{ $title ?: 'Course Title' }}</h3>
                     <p class="course-card-desc">

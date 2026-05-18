@@ -2,26 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends Model
 {
     use HasFactory;
 
-    protected $table = 'quizzes';
-
-    protected $fillable = [
-        'course_id', 'title', 'description', 'is_published'
-    ];
-
-    protected $casts = [
-        'is_published' => 'boolean'
-    ];
+    protected $table    = 'quizzes';
+    protected $fillable = ['course_id', 'title', 'description', 'is_published'];
+    protected $casts    = ['is_published' => 'boolean'];
 
     public function course()
     {
-        return $this->belongsTo(Cour::class, 'course_id');
+        return $this->belongsTo(Course::class, 'course_id');
     }
 
     public function questions()
@@ -34,8 +28,8 @@ class Quiz extends Model
         return $this->hasMany(QuizAttempt::class, 'quiz_id');
     }
 
-    public function getTotalPoints()
+    public function totalPoints(): int
     {
-        return $this->questions()->sum('points');
+        return (int) $this->questions()->sum('points');
     }
 }

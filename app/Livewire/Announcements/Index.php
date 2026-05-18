@@ -1,63 +1,60 @@
 <?php
+
 namespace App\Livewire\Announcements;
 
-use App\Models\Cour;
-use Livewire\Component;
+use App\Models\Course;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Index extends Component
 {
-    public Cour $cour;
+    public Course $course;
 
-    public function mount(Cour $cour)
+    public function mount(Course $course): void
     {
         $user = auth()->user();
 
-        // Allow admin to view any course's announcements
         if ($user->isAdmin()) {
-            $this->cour = $cour;
+            $this->course = $course;
             return;
         }
 
         if ($user->isStudent()) {
-            if (!$cour->enrollments()->where('student_id', $user->id)->exists()) {
+            if (! $course->enrollments()->where('student_id', $user->id)->exists()) {
                 abort(403, 'You are not enrolled in this course.');
             }
         } elseif ($user->isTeacher()) {
-            if ($cour->teacher_id != $user->id) {
+            if ((int) $course->teacher_id !== (int) $user->id) {
                 abort(403, 'You do not own this course.');
             }
         } else {
             abort(403);
         }
 
-        $this->cour = $cour;
+        $this->course = $course;
     }
 
-    public function delete($id)
+    public function delete(int $id): void
     {
         $user = auth()->user();
 
-        // Only teachers who own the course or admins can delete announcements
-        if (!$user->isTeacher() && !$user->isAdmin()) {
+        if (! $user->isTeacher() && ! $user->isAdmin()) {
             abort(403);
         }
 
-        // If teacher, verify ownership
-        if ($user->isTeacher() && $this->cour->teacher_id != $user->id) {
+        if ($user->isTeacher() && (int) $this->course->teacher_id !== (int) $user->id) {
             abort(403);
         }
 
-        $announcement = $this->cour->announcements()->findOrFail($id);
-        $announcement->delete();
+        $this->course->announcements()->findOrFail($id)->delete();
         session()->flash('success', 'Announcement deleted successfully.');
     }
 
     public function render()
     {
         return view('livewire.announcements.index', [
-            'announcements' => $this->cour->announcements()->latest('posted_at')->get(),
+            'announcements' => $this->course->announcements()->latest('posted_at')->get(),
         ]);
     }
 }

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // NO CASCADE on quiz_id – avoids multiple cascade paths through course
         Schema::create('quiz_attempts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
@@ -44,6 +45,7 @@ return new class extends Migration
             $table->integer('score')->nullable();
             $table->boolean('is_graded')->default(false);
             $table->json('answers')->nullable();
+            $table->unique(['student_id', 'quiz_id']);
             $table->timestamps();
         });
     }

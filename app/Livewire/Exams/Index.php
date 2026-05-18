@@ -2,51 +2,47 @@
 
 namespace App\Livewire\Exams;
 
-use App\Models\Cour;
-use Livewire\Component;
+use App\Models\Course;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Index extends Component
 {
-    public Cour $cour;
+    public Course $course;
 
-    public function mount(Cour $cour)
+    public function mount(Course $course): void
     {
         $user = auth()->user();
 
-        if (!$user->isTeacher()) {
+        if (! $user->isTeacher() || (int) $course->teacher_id !== (int) $user->id) {
             abort(403);
         }
 
-        if ($cour->teacher_id != $user->id) {
-            abort(403);
-        }
-
-        $this->cour = $cour;
+        $this->course = $course;
     }
 
-    public function deleteExam($examId)
+    public function deleteExam(int $examId): void
     {
-        $exam = $this->cour->exams()->findOrFail($examId);
+        $exam = $this->course->exams()->findOrFail($examId);
         $exam->attempts()->delete();
         $exam->questions()->delete();
         $exam->delete();
         session()->flash('success', 'Exam deleted successfully.');
     }
 
-    public function togglePublish($examId)
+    public function togglePublish(int $examId): void
     {
-        $exam = $this->cour->exams()->findOrFail($examId);
-        $exam->is_published = !$exam->is_published;
+        $exam               = $this->course->exams()->findOrFail($examId);
+        $exam->is_published = ! $exam->is_published;
         $exam->save();
-        session()->flash('success', 'Exam ' . ($exam->is_published ? 'published' : 'unpublished') . ' successfully.');
+        session()->flash('success', 'Exam ' . ($exam->is_published ? 'published' : 'unpublished') . '.');
     }
 
     public function render()
     {
         return view('livewire.exams.index', [
-            'exams' => $this->cour->exams()->with('questions')->latest()->get(),
+            'exams' => $this->course->exams()->with('questions')->latest()->get(),
         ]);
     }
 }

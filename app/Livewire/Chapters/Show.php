@@ -3,74 +3,67 @@
 namespace App\Livewire\Chapters;
 
 use App\Models\Chapter;
-use App\Models\Cour;
 use App\Models\ChapterComment;
 use App\Models\CommentReply;
+use App\Models\Course;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Show extends Component
 {
-    public Cour $cour;
+    public Course  $course;
     public Chapter $chapter;
-    public $comments = [];
-    public $newComment = '';
-    public $replyText = [];
-    public $showReplyForm = [];
 
-    public function mount(Cour $cour, Chapter $chapter)
+    public        $comments       = [];
+    public string $newComment     = '';
+    public array  $replyText      = [];
+    public array  $showReplyForm  = [];
+
+    public function mount(Course $course, Chapter $chapter): mixed
     {
-        $user = auth()->user();
-
-        if ($chapter->course_id != $cour->id) {
+        if ((int) $chapter->course_id !== (int) $course->id) {
             abort(404, 'Chapter not found in this course.');
         }
 
-        if ($user->isAdmin()) {
-            $this->cour = $cour;
-            $this->chapter = $chapter;
-            $this->loadComments();
-            return;
+        $user = auth()->user();
+
+        if ($user->isStudent() && ! $course->enrollments()->where('student_id', $user->id)->exists()) {
+            return redirect()->route('student.cours.enroll', $course);
         }
 
-        if ($user->isStudent()) {
-            if (! $cour->enrollments()->where('student_id', $user->id)->exists()) {
-                return redirect()->route('student.cours.enroll', $cour);
-            }
-        } elseif ($user->isTeacher()) {
-            if ($cour->teacher_id != $user->id) {
-                abort(403, 'You do not own this course.');
-            }
+        if ($user->isTeacher() && (int) $course->teacher_id !== (int) $user->id) {
+            abort(403, 'You do not own this course.');
         }
 
-        $this->cour = $cour;
+        $this->course  = $course;
         $this->chapter = $chapter;
         $this->loadComments();
+
+        return null;
     }
 
-    public function loadComments()
+    public function loadComments(): void
     {
         $this->comments = ChapterComment::where('chapter_id', $this->chapter->id)
-            ->with(['student', 'replies.student'])
+            ->with(['author', 'replies.author'])
             ->latest()
             ->get();
     }
 
-    public function addComment()
+    public function addComment(): void
     {
-        $this->validate([
-            'newComment' => 'required|string|min:2|max:1000',
-        ]);
+        $this->validate(['newComment' => 'required|string|min:2|max:1000']);
 
-        if (!auth()->user()->isStudent() && !auth()->user()->isTeacher()) {
+        $user = auth()->user();
+        if (! $user->isStudent() && ! $user->isTeacher()) {
             session()->flash('error', 'Only students and teachers can comment.');
             return;
         }
 
         ChapterComment::create([
-            'chapter_id' => $this->chapter->id,
-            'student_id' => auth()->id(), // This field name is misleading but it stores user_id
+            'chapter_id'   => $this->chapter->id,
+            'student_id'   => $user->id,
             'comment_text' => $this->newComment,
         ]);
 
@@ -79,40 +72,38 @@ class Show extends Component
         session()->flash('success', 'Comment added!');
     }
 
-    public function addReply($commentId)
+    public function addReply(int $commentId): void
     {
-        $this->validate([
-            "replyText.{$commentId}" => 'required|string|min:2|max:500',
-        ]);
+        $this->validate(["replyText.{$commentId}" => 'required|string|min:2|max:500']);
 
-        // Allow both students AND teachers to reply
-        if (!auth()->user()->isStudent() && !auth()->user()->isTeacher()) {
+        $user = auth()->user();
+        if (! $user->isStudent() && ! $user->isTeacher()) {
             session()->flash('error', 'Only students and teachers can reply.');
             return;
         }
 
         CommentReply::create([
             'chapter_comment_id' => $commentId,
-            'student_id' => auth()->id(),
-            'reply_text' => $this->replyText[$commentId],
+            'student_id'         => $user->id,
+            'reply_text'         => $this->replyText[$commentId],
         ]);
 
-        $this->replyText[$commentId] = '';
+        $this->replyText[$commentId]     = '';
         $this->showReplyForm[$commentId] = false;
         $this->loadComments();
         session()->flash('success', 'Reply added!');
     }
 
-    public function toggleReplyForm($commentId)
+    public function toggleReplyForm(int $commentId): void
     {
-        $this->showReplyForm[$commentId] = !($this->showReplyForm[$commentId] ?? false);
+        $this->showReplyForm[$commentId] = ! ($this->showReplyForm[$commentId] ?? false);
     }
 
     public function render()
     {
         return view('livewire.chapters.show', [
-            'cour' => $this->cour,
-            'chapter' => $this->chapter->load('attachments'),
+            'course'   => $this->course,
+            'chapter'  => $this->chapter->load('attachments'),
             'comments' => $this->comments,
         ]);
     }

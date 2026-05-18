@@ -7,11 +7,12 @@ use Livewire\Component;
 
 class Nav extends Component
 {
-    public function logout()
+    public function logout(): mixed
     {
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
+
         return redirect('/login');
     }
 

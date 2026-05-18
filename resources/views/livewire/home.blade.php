@@ -106,7 +106,7 @@
             </div>
 
             <div>
-                <livewire:cours-card />
+                <x-cours-card />
             </div>
     </section>
 

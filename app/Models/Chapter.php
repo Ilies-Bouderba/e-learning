@@ -11,9 +11,11 @@ class Chapter extends Model
 
     protected $fillable = ['course_id', 'title', 'chapter_number', 'content'];
 
+    // ── Relationships ─────────────────────────────────────────────────────────
+
     public function course()
     {
-        return $this->belongsTo(Cour::class, 'course_id');
+        return $this->belongsTo(Course::class, 'course_id');
     }
 
     public function attachments()
@@ -21,18 +23,29 @@ class Chapter extends Model
         return $this->hasMany(Attachment::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(ChapterComment::class);
+    }
+
     public function progress()
     {
         return $this->hasMany(StudentProgress::class);
     }
 
-    public function isCompletedByStudent($studentId = null)
+    // ── Progress helpers ──────────────────────────────────────────────────────
+
+    public function isCompletedBy(?int $studentId = null): bool
     {
         $studentId = $studentId ?? auth()->id();
-        return $this->progress()->where('student_id', $studentId)->where('completed', true)->exists();
+
+        return $this->progress()
+            ->where('student_id', $studentId)
+            ->where('completed', true)
+            ->exists();
     }
 
-    public function markAsCompleted($studentId = null)
+    public function markCompleted(?int $studentId = null): StudentProgress
     {
         $studentId = $studentId ?? auth()->id();
 
@@ -42,11 +55,11 @@ class Chapter extends Model
         );
     }
 
-    public function markAsIncomplete($studentId = null)
+    public function markIncomplete(?int $studentId = null): void
     {
         $studentId = $studentId ?? auth()->id();
 
-        return StudentProgress::where('student_id', $studentId)
+        StudentProgress::where('student_id', $studentId)
             ->where('chapter_id', $this->id)
             ->delete();
     }

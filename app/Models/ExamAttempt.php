@@ -11,15 +11,15 @@ class ExamAttempt extends Model
 
     protected $fillable = [
         'student_id', 'exam_id', 'started_at', 'completed_at',
-        'answers', 'ai_grades', 'total_score', 'is_graded'
+        'answers', 'ai_grades', 'total_score', 'is_graded',
     ];
 
     protected $casts = [
-        'started_at' => 'datetime',
+        'started_at'   => 'datetime',
         'completed_at' => 'datetime',
-        'answers' => 'array',
-        'ai_grades' => 'array',
-        'is_graded' => 'boolean',
+        'answers'      => 'array',
+        'ai_grades'    => 'array',
+        'is_graded'    => 'boolean',
     ];
 
     public function student()

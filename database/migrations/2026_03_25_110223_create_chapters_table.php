@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('chapters', function (Blueprint $table) {
@@ -24,15 +21,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('chapter_id')->constrained('chapters')->onDelete('cascade');
             $table->string('title');
-            $table->string('type')->default('pdf'); // Changed from enum to string for SQL Server
+            $table->string('type', 20)->default('pdf'); // string not enum – SQL Server compatible
             $table->string('file_path');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('attachments');

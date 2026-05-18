@@ -2,10 +2,10 @@
     <main class="dash-main">
         <div class="course-show-header">
             <div class="csh-left">
-                <div class="csh-icon">{{ $cour->icon }}</div>
+                <div class="csh-icon">{{ $course->icon }}</div>
                 <div>
-                    <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                    <h1 class="csh-title">{{ $cour->title }} - Quizzes</h1>
+                    <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                    <h1 class="csh-title">{{ $course->title }} - Quizzes</h1>
                     <p class="csh-desc">Test your knowledge with these quizzes</p>
                 </div>
             </div>
@@ -57,11 +57,11 @@
                         </div>
                         <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
                             @if($status == 'completed')
-                                <a href="{{ route('quizzes.show', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
+                                <a href="{{ route('quizzes.show', ['course' => $course, 'quiz' => $quiz]) }}" class="btn-sm">View Results</a>
                             @elseif($status == 'in_progress')
-                                <a href="{{ route('quizzes.take', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn btn-primary">Continue →</a>
+                                <a href="{{ route('student.quizzes.take', ['course' => $course, 'quiz' => $quiz]) }}" class="btn btn-primary">Continue →</a>
                             @else
-                                <a href="{{ route('quizzes.take', ['cour' => $cour, 'quiz' => $quiz]) }}" class="btn btn-primary">Start Quiz →</a>
+                                <a href="{{ route('student.quizzes.take', ['course' => $course, 'quiz' => $quiz]) }}" class="btn btn-primary">Start Quiz →</a>
                             @endif
                         </div>
                     </div>
@@ -75,7 +75,7 @@
         </div>
 
         <div class="dash-card" style="margin-top: 1.5rem;">
-            <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">← Back to Course</a>
+            <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">← Back to Course</a>
         </div>
     </main>
 </div>

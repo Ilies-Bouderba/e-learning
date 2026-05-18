@@ -1,13 +1,13 @@
 <div class="dash-layout">
-    <livewire:course-sidebar :cour="$cour" active="exams" />
+    <livewire:course-sidebar :course="$course" active="exams" />
 
     <main class="dash-main">
         <div class="create-course-page">
             <div class="container" style="max-width: 100%; padding: 0;">
                 <div class="cc-header" style="margin-bottom: 2rem;">
-                    <a href="{{ route('teacher.exams.index', $cour) }}" class="cc-back">← Back to Exams</a>
+                    <a href="{{ route('teacher.exams.index', $course) }}" class="cc-back">← Back to Exams</a>
                     <div>
-                        <span class="section-tag">{{ $cour->icon }} {{ $cour->title }}</span>
+                        <span class="section-tag">{{ $course->icon }} {{ $course->title }}</span>
                         <h1 class="cc-title">Edit Exam: {{ $exam->title }}</h1>
                         <p class="cc-sub">Update exam details and questions</p>
                     </div>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="cc-actions" style="margin-top: 2rem; padding-top: 1rem; border-top: 1.5px solid rgba(15,14,23,0.1);">
-                        <a href="{{ route('teacher.exams.index', $cour) }}" class="btn btn-ghost">Cancel</a>
+                        <a href="{{ route('teacher.exams.index', $course) }}" class="btn btn-ghost">Cancel</a>
                         <button type="submit" class="btn btn-primary btn-lg">
                             <span wire:loading.remove wire:target="saveExam">Save Changes →</span>
                             <span wire:loading wire:target="saveExam">Saving...</span>

@@ -16,7 +16,8 @@ class ChapterComment extends Model
         return $this->belongsTo(Chapter::class);
     }
 
-    public function student()
+    /** The user who posted the comment (could be student or teacher) */
+    public function author()
     {
         return $this->belongsTo(User::class, 'student_id');
     }

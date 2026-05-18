@@ -1,16 +1,16 @@
 <div x-data="{ open: false, selected: null }">
     <div class="dash-layout">
-        <livewire:course-sidebar :cour="$cour" active="announcements" />
+        <livewire:course-sidebar :course="$course" active="announcements" />
 
         <main class="dash-main">
             <div class="dash-header">
                 <div>
-                    <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
-                    <h1 class="dash-title">{{ $cour->title }}</h1>
+                    <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
+                    <h1 class="dash-title">{{ $course->title }}</h1>
                     <p class="dash-subtitle">Course announcements</p>
                 </div>
-                @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                    <a href="{{ route('teacher.announcements.create', $cour) }}" class="btn btn-primary">+ New Announcement</a>
+                @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                    <a href="{{ route('teacher.announcements.create', $course) }}" class="btn btn-primary">+ New Announcement</a>
                 @endif
             </div>
 
@@ -44,7 +44,7 @@
                                 {{ Str::limit($ann->content, 150) }}
                             </div>
                         </div>
-                        @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
+                        @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
                         <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
                             <button class="mc-btn-delete" wire:click="delete({{ $ann->id }})" wire:confirm="Are you sure you want to delete this announcement?">
                                 Delete
@@ -57,15 +57,15 @@
                 <div class="mc-empty">
                     <span>📭</span>
                     <p>No announcements yet.</p>
-                    @if(auth()->user()->isTeacher() && $cour->teacher_id == auth()->id())
-                        <a href="{{ route('announcements.create', $cour) }}" class="btn btn-primary" style="margin-top: 1rem;">Post Your First Announcement →</a>
+                    @if(auth()->user()->isTeacher() && $course->teacher_id == auth()->id())
+                        <a href="{{ route('announcements.create', $course) }}" class="btn btn-primary" style="margin-top: 1rem;">Post Your First Announcement →</a>
                     @endif
                 </div>
                 @endforelse
             </div>
 
             <div class="dash-card" style="margin-top: 1.5rem;">
-                <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">← Back to Course</a>
+                <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">← Back to Course</a>
             </div>
         </main>
     </div>

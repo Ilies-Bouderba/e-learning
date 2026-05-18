@@ -3,9 +3,9 @@
         <main class="dash-main">
             <div class="course-show-header">
                 <div class="csh-left">
-                    <div class="csh-icon">{{ $cour->icon }}</div>
+                    <div class="csh-icon">{{ $course->icon }}</div>
                     <div>
-                        <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
+                        <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
                         <h1 class="csh-title">{{ $exam->title }} - Results</h1>
                         <p class="csh-desc">Your exam results and answers</p>
                     </div>
@@ -82,25 +82,25 @@
                 @endforeach
 
                 <div style="margin-top: 2rem; padding-top: 1rem; text-align: center;">
-                    <a href="{{ route('cours.show', $cour) }}" class="btn btn-primary">Back to Course</a>
+                    <a href="{{ route('cours.show', $course) }}" class="btn btn-primary">Back to Course</a>
                 </div>
             </div>
         </main>
     </div>
 @elseif(auth()->user()->isTeacher())
     <div class="dash-layout">
-        <livewire:course-sidebar :cour="$cour" active="exams" />
+        <livewire:course-sidebar :course="$course" active="exams" />
 
         <main class="dash-main">
             <div class="dash-header">
                 <div>
-                    <div class="csh-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</div>
+                    <div class="csh-dept">{{ $course->department->icon }} {{ $course->department->name }}</div>
                     <h1 class="dash-title">{{ $exam->title }}</h1>
                     <p class="dash-subtitle">{{ $exam->description ?: 'Exam results and analytics' }}</p>
                 </div>
                 <div style="display: flex; gap: 0.75rem;">
-                    <a href="{{ route('teacher.exams.edit', ['cour' => $cour, 'exam' => $exam]) }}" class="btn btn-primary">Edit Exam</a>
-                    <a href="{{ route('teacher.exams.index', $cour) }}" class="btn btn-ghost">← Back</a>
+                    <a href="{{ route('teacher.exams.edit', ['course' => $course, 'exam' => $exam]) }}" class="btn btn-primary">Edit Exam</a>
+                    <a href="{{ route('teacher.exams.index', $course) }}" class="btn btn-ghost">← Back</a>
                 </div>
             </div>
 
@@ -134,9 +134,9 @@
                         <h2 class="dash-card-title">Statistics</h2>
                     </div>
                     <div style="padding: 0.5rem 0;">
-                        <p><strong>Total Attempts:</strong> {{ $studentAttempts->count() }}</p>
-                        <p><strong>Average Score:</strong> {{ round($studentAttempts->avg('total_score'), 1) }} / {{ $exam->total_score }}</p>
-                        <p><strong>Highest Score:</strong> {{ round($studentAttempts->max('total_score'), 1) }} / {{ $exam->total_score }}</p>
+                        <p><strong>Total Attempts:</strong> {{ collect($studentAttempts)->count() }}</p>
+                        <p><strong>Average Score:</strong> {{ round(collect($studentAttempts)->avg('total_score'), 1) }} / {{ $exam->total_score }}</p>
+                        <p><strong>Highest Score:</strong> {{ round(collect($studentAttempts)->max('total_score'), 1) }} / {{ $exam->total_score }}</p>
                     </div>
                 </div>
             </div>

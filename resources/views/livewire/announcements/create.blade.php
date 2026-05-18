@@ -1,9 +1,9 @@
 <div class="create-course-page">
     <div class="container">
         <div class="cc-header">
-            <a href="{{ route('cours.show', $cour) }}" class="cc-back">← Back to Course</a>
+            <a href="{{ route('cours.show', $course) }}" class="cc-back">← Back to Course</a>
             <div>
-                <span class="section-tag">{{ $cour->icon }} {{ $cour->title }}</span>
+                <span class="section-tag">{{ $course->icon }} {{ $course->title }}</span>
                 <h1 class="cc-title">New Announcement</h1>
                 <p class="cc-sub">Post an announcement to all enrolled students.</p>
             </div>
@@ -26,7 +26,7 @@
                 @enderror
             </div>
             <div class="cc-actions">
-                <a href="{{ route('cours.show', $cour) }}" class="btn btn-ghost">Cancel</a>
+                <a href="{{ route('cours.show', $course) }}" class="btn btn-ghost">Cancel</a>
                 <button type="submit" class="btn btn-primary btn-lg">
                     <span wire:loading.remove wire:target="save">Post Announcement →</span>
                     <span wire:loading wire:target="save">Posting...</span>

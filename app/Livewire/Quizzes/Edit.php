@@ -2,129 +2,115 @@
 
 namespace App\Livewire\Quizzes;
 
-use App\Models\Cour;
+use App\Models\Course;
 use App\Models\Quiz;
-use App\Models\QuizQuestion;
 use App\Models\QuizOption;
-use Livewire\Component;
-use Livewire\Attributes\Layout;
+use App\Models\QuizQuestion;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Edit extends Component
 {
-    public Cour $cour;
-    public Quiz $quiz;
-    public $title = '';
-    public $description = '';
+    public Course $course;
+    public Quiz   $quiz;
 
-    public $questions = [];
-    public $currentQuestionIndex = 0;
-    public $showQuestionForm = false;
+    public string $title       = '';
+    public string $description = '';
+    public array  $questions   = [];
+    public int    $currentQuestionIndex = 0;
+    public bool   $showQuestionForm     = false;
 
     protected array $rules = [
-        'title' => 'required|string|max:255',
+        'title'       => 'required|string|max:255',
         'description' => 'nullable|string',
     ];
 
-    public function mount(Cour $cour, Quiz $quiz)
+    public function mount(Course $course, Quiz $quiz): void
     {
         $user = auth()->user();
 
-        if (!$user->isTeacher()) {
-            abort(403, 'Only teachers can edit quizzes.');
+        if (! $user->isTeacher() || (int) $course->teacher_id !== (int) $user->id) {
+            abort(403);
         }
 
-        if ($cour->teacher_id != $user->id) {
-            abort(403, 'You do not own this course.');
-        }
-
-        if ($quiz->course_id != $cour->id) {
+        if ($quiz->course_id !== $course->id) {
             abort(404);
         }
 
-        $this->cour = $cour;
-        $this->quiz = $quiz;
-        $this->title = $quiz->title;
-        $this->description = $quiz->description;
+        $this->course      = $course;
+        $this->quiz        = $quiz;
+        $this->title       = $quiz->title;
+        $this->description = $quiz->description ?? '';
 
         $this->loadQuestions();
     }
 
-    public function loadQuestions()
+    private function loadQuestions(): void
     {
-        $dbQuestions = $this->quiz->questions()->with('options')->orderBy('order')->get();
-
-        foreach ($dbQuestions as $dbQuestion) {
-            $options = [];
-            foreach ($dbQuestion->options as $dbOption) {
-                $options[] = [
-                    'id' => $dbOption->id,
-                    'option_text' => $dbOption->option_text,
-                    'is_correct' => $dbOption->is_correct,
-                ];
-            }
-
-            $this->questions[] = [
-                'id' => $dbQuestion->id,
-                'temp_id' => Str::random(10),
-                'question_text' => $dbQuestion->question_text,
-                'points' => $dbQuestion->points,
-                'options' => $options,
-            ];
-        }
+        $this->questions = $this->quiz->questions()->with('options')->orderBy('order')->get()
+            ->map(fn ($q) => [
+                'id'            => $q->id,
+                'temp_id'       => Str::random(10),
+                'question_text' => $q->question_text,
+                'points'        => $q->points,
+                'options'       => $q->options->map(fn ($o) => [
+                    'id'          => $o->id,
+                    'option_text' => $o->option_text,
+                    'is_correct'  => $o->is_correct,
+                ])->toArray(),
+            ])
+            ->toArray();
     }
 
-    public function addQuestion()
+    public function addQuestion(): void
     {
         $this->questions[] = [
-            'id' => null,
-            'temp_id' => Str::random(10),
+            'id'            => null,
+            'temp_id'       => Str::random(10),
             'question_text' => '',
-            'points' => 1,
-            'options' => [
+            'points'        => 1,
+            'options'       => [
                 ['id' => null, 'temp_id' => Str::random(10), 'option_text' => '', 'is_correct' => false],
-                ['id' => null, 'temp_id' => Str::random(10), 'option_text' => '', 'is_correct' => false]
-            ]
+                ['id' => null, 'temp_id' => Str::random(10), 'option_text' => '', 'is_correct' => false],
+            ],
         ];
         $this->currentQuestionIndex = count($this->questions) - 1;
-        $this->showQuestionForm = true;
+        $this->showQuestionForm     = true;
     }
 
-    public function editQuestion($index)
+    public function editQuestion(int $index): void
     {
         $this->currentQuestionIndex = $index;
-        $this->showQuestionForm = true;
+        $this->showQuestionForm     = true;
     }
 
-    public function addOption($questionIndex)
+    public function addOption(int $questionIndex): void
     {
         $this->questions[$questionIndex]['options'][] = [
-            'id' => null,
-            'temp_id' => Str::random(10),
-            'option_text' => '',
-            'is_correct' => false
+            'id' => null, 'temp_id' => Str::random(10), 'option_text' => '', 'is_correct' => false,
         ];
     }
 
-    public function removeOption($questionIndex, $optionIndex)
+    public function removeOption(int $questionIndex, int $optionIndex): void
     {
         $option = $this->questions[$questionIndex]['options'][$optionIndex];
 
-        if (isset($option['id']) && $option['id']) {
-            QuizOption::where('id', $option['id'])->delete();
+        if (! empty($option['id'])) {
+            QuizOption::destroy($option['id']);
         }
 
         unset($this->questions[$questionIndex]['options'][$optionIndex]);
         $this->questions[$questionIndex]['options'] = array_values($this->questions[$questionIndex]['options']);
     }
 
-    public function removeQuestion($index)
+    public function removeQuestion(int $index): void
     {
         $question = $this->questions[$index];
 
-        if (isset($question['id']) && $question['id']) {
-            QuizQuestion::where('id', $question['id'])->delete();
+        if (! empty($question['id'])) {
+            QuizQuestion::destroy($question['id']);
         }
 
         unset($this->questions[$index]);
@@ -132,71 +118,69 @@ class Edit extends Component
         session()->flash('success', 'Question removed.');
     }
 
-    public function saveQuiz()
+    public function cancelQuestionForm(): void
+    {
+        $this->showQuestionForm     = false;
+        $this->currentQuestionIndex = 0;
+    }
+
+    public function saveQuiz(): mixed
     {
         $this->validate();
 
         $this->quiz->update([
-            'title' => $this->title,
+            'title'       => $this->title,
             'description' => $this->description,
         ]);
 
-        foreach ($this->questions as $questionData) {
-            if (isset($questionData['id']) && $questionData['id']) {
-                $question = QuizQuestion::find($questionData['id']);
+        foreach ($this->questions as $qData) {
+            if (! empty($qData['id'])) {
+                $question = QuizQuestion::find($qData['id']);
+
                 if ($question) {
                     $question->update([
-                        'question_text' => $questionData['question_text'],
-                        'points' => $questionData['points'],
+                        'question_text' => $qData['question_text'],
+                        'points'        => $qData['points'],
                     ]);
 
-                    $existingOptionIds = [];
-                    foreach ($questionData['options'] as $optionData) {
-                        if (isset($optionData['id']) && $optionData['id']) {
-                            $option = QuizOption::find($optionData['id']);
-                            if ($option) {
-                                $option->update([
-                                    'option_text' => $optionData['option_text'],
-                                    'is_correct' => $optionData['is_correct'],
-                                ]);
-                                $existingOptionIds[] = $option->id;
-                            }
-                        } else {
-                            $newOption = $question->options()->create([
-                                'option_text' => $optionData['option_text'],
-                                'is_correct' => $optionData['is_correct'],
+                    $keptOptionIds = [];
+
+                    foreach ($qData['options'] as $oData) {
+                        if (! empty($oData['id'])) {
+                            QuizOption::where('id', $oData['id'])->update([
+                                'option_text' => $oData['option_text'],
+                                'is_correct'  => $oData['is_correct'],
                             ]);
-                            $existingOptionIds[] = $newOption->id;
+                            $keptOptionIds[] = $oData['id'];
+                        } else {
+                            $newOpt          = $question->options()->create([
+                                'option_text' => $oData['option_text'],
+                                'is_correct'  => $oData['is_correct'],
+                            ]);
+                            $keptOptionIds[] = $newOpt->id;
                         }
                     }
 
-                    $question->options()->whereNotIn('id', $existingOptionIds)->delete();
+                    $question->options()->whereNotIn('id', $keptOptionIds)->delete();
                 }
             } else {
                 $question = $this->quiz->questions()->create([
-                    'question_text' => $questionData['question_text'],
-                    'points' => $questionData['points'],
-                    'order' => 0,
+                    'question_text' => $qData['question_text'],
+                    'points'        => $qData['points'],
+                    'order'         => 0,
                 ]);
 
-                foreach ($questionData['options'] as $optionData) {
+                foreach ($qData['options'] as $oData) {
                     $question->options()->create([
-                        'option_text' => $optionData['option_text'],
-                        'is_correct' => $optionData['is_correct'],
+                        'option_text' => $oData['option_text'],
+                        'is_correct'  => $oData['is_correct'],
                     ]);
                 }
             }
         }
 
         session()->flash('success', 'Quiz updated successfully!');
-
-        return redirect()->route('teacher.quizzes.index', $this->cour);
-    }
-
-    public function cancelQuestionForm()
-    {
-        $this->showQuestionForm = false;
-        $this->currentQuestionIndex = null;
+        return redirect()->route('teacher.quizzes.index', $this->course);
     }
 
     public function render()

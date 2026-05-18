@@ -1,16 +1,16 @@
 <div class="enroll-page">
     <div class="container">
         <div class="enroll-card">
-            <div class="enroll-icon">{{ $cour->icon }}</div>
-            <h1 class="enroll-title">{{ $cour->title }}</h1>
-            <p class="enroll-dept">{{ $cour->department->icon }} {{ $cour->department->name }}</p>
-            <p class="enroll-desc">{{ $cour->description }}</p>
+            <div class="enroll-icon">{{ $course->icon }}</div>
+            <h1 class="enroll-title">{{ $course->title }}</h1>
+            <p class="enroll-dept">{{ $course->department->icon }} {{ $course->department->name }}</p>
+            <p class="enroll-desc">{{ $course->description }}</p>
             <div class="enroll-meta">
-                <span>👨‍🏫 {{ $cour->teacher->name }}</span>
-                <span>📖 {{ $cour->chapters()->count() }} chapters</span>
-                <span>👥 {{ $cour->enrollments()->count() }} students</span>
+                <span>👨‍🏫 {{ $course->teacher->name }}</span>
+                <span>📖 {{ $course->chapters()->count() }} chapters</span>
+                <span>👥 {{ $course->enrollments()->count() }} students</span>
             </div>
-            @if ($cour->hasPassword())
+            @if ($course->hasPassword())
                 <div class="enroll-form">
                     <p class="enroll-locked">🔒 This course requires a password to enroll.</p>
                     <div class="cc-field">

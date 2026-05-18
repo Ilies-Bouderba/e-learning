@@ -10,11 +10,10 @@ class Announcement extends Model
     use HasFactory;
 
     protected $fillable = ['course_id', 'title', 'content', 'posted_at'];
-
-    protected $casts = ['posted_at' => 'datetime'];
+    protected $casts    = ['posted_at' => 'datetime'];
 
     public function course()
     {
-        return $this->belongsTo(Cour::class, 'course_id');
+        return $this->belongsTo(Course::class, 'course_id');
     }
 }

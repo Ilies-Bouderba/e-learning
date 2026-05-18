@@ -2,18 +2,17 @@
 
 namespace App\Livewire;
 
-use App\Models\Cour;
+use App\Models\Course;
 use Livewire\Component;
 
 class CourseSidebar extends Component
 {
-    public Cour $cour;
-
+    public Course $course;
     public string $active = 'chapters';
 
-    public function mount(Cour $cour, string $active = 'chapters')
+    public function mount(Course $course, string $active = 'chapters'): void
     {
-        $this->cour = $cour;
+        $this->course = $course;
         $this->active = $active;
     }
 

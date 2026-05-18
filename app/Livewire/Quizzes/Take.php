@@ -2,120 +2,113 @@
 
 namespace App\Livewire\Quizzes;
 
+use App\Models\Course;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
-use App\Models\Cour;
-use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Take extends Component
 {
-    public Cour $cour;
-    public Quiz $quiz;
-    public $attempt = null;
-    public $answers = [];
-    public $currentQuestion = 0;
-    public $questions = [];
+    public Course      $course;
+    public Quiz        $quiz;
+    public             $attempt         = null;
+    public array       $answers         = [];
+    public int         $currentQuestion = 0;
+    public             $questions       = [];
 
-    public function mount(Cour $cour, Quiz $quiz)
+    public function mount(Course $course, Quiz $quiz): mixed
     {
         $student = auth()->user();
 
-        if (!$student->isStudent()) {
+        if (! $student->isStudent()) {
             abort(403);
         }
 
-        if (!$cour->enrollments()->where('student_id', $student->id)->exists()) {
-            return redirect()->route('cours.enroll', $cour);
+        if (! $course->enrollments()->where('student_id', $student->id)->exists()) {
+            return redirect()->route('student.cours.enroll', $course);
         }
 
-        $this->cour = $cour;
-        $this->quiz = $quiz;
+        $this->course    = $course;
+        $this->quiz      = $quiz;
         $this->questions = $quiz->questions()->with('options')->orderBy('order')->get();
 
-        $this->attempt = QuizAttempt::where('student_id', $student->id)
-            ->where('quiz_id', $quiz->id)
-            ->first();
-
-        if (!$this->attempt) {
-            $this->attempt = QuizAttempt::create([
-                'student_id' => $student->id,
-                'quiz_id' => $quiz->id,
-                'started_at' => now(),
-            ]);
-        }
+        $this->attempt = QuizAttempt::firstOrCreate(
+            ['student_id' => $student->id, 'quiz_id' => $quiz->id],
+            ['started_at' => now()]
+        );
 
         $this->loadAnswers();
+        return null;
     }
 
-    public function loadAnswers()
+    private function loadAnswers(): void
     {
         if ($this->attempt->answers) {
             $this->answers = $this->attempt->answers;
-        } else {
-            foreach ($this->questions as $index => $question) {
-                $this->answers[$question->id] = null;
-            }
+            return;
         }
+
+        $this->answers = $this->questions->mapWithKeys(fn ($q) => [$q->id => null])->toArray();
     }
 
-    public function saveAnswer($questionId, $answer)
+    public function saveAnswer(int $questionId, mixed $answer): void
     {
         $this->answers[$questionId] = $answer;
         $this->attempt->update(['answers' => $this->answers]);
     }
 
-    public function nextQuestion()
+    public function nextQuestion(): void
     {
         if ($this->currentQuestion < count($this->questions) - 1) {
             $this->currentQuestion++;
         }
     }
 
-    public function previousQuestion()
+    public function previousQuestion(): void
     {
         if ($this->currentQuestion > 0) {
             $this->currentQuestion--;
         }
     }
 
-    public function submitQuiz()
+    public function submitQuiz(): mixed
     {
-        $score = 0;
+        $score       = 0;
         $totalPoints = 0;
 
         foreach ($this->questions as $question) {
-            $totalPoints += $question->points;
-            $userAnswer = $this->answers[$question->id] ?? null;
+            $totalPoints  += $question->points;
+            $userAnswer    = $this->answers[$question->id] ?? null;
+            $correctOption = $question->options()->where('is_correct', true)->first();
 
-            if ($userAnswer) {
-                $correctOption = $question->options()->where('is_correct', true)->first();
-                if ($correctOption && $correctOption->id == $userAnswer) {
-                    $score += $question->points;
-                }
+            if ($userAnswer && $correctOption && $correctOption->id == $userAnswer) {
+                $score += $question->points;
             }
         }
 
-        $percentageScore = $totalPoints > 0 ? ($score / $totalPoints) * 100 : 0;
+        $percentage = $totalPoints > 0 ? ($score / $totalPoints) * 100 : 0;
 
         $this->attempt->update([
             'completed_at' => now(),
-            'score' => $percentageScore,
-            'is_graded' => true,
-            'answers' => $this->answers
+            'score'        => $percentage,
+            'is_graded'    => true,
+            'answers'      => $this->answers,
         ]);
 
-        session()->flash('success', "Quiz submitted! Your score: " . round($percentageScore) . "%");
-        return redirect()->route('cours.show', $this->cour);
+        session()->flash('success', 'Quiz submitted! Your score: ' . round($percentage) . '%');
+        return redirect()->route('cours.show', $this->course);
     }
 
     public function render()
     {
+        $total = count($this->questions);
+
         return view('livewire.quizzes.take', [
-            'questions' => $this->questions,
+            'questions'           => $this->questions,
             'currentQuestionData' => $this->questions[$this->currentQuestion] ?? null,
-            'progress' => count($this->questions) > 0 ? (($this->currentQuestion + 1) / count($this->questions)) * 100 : 0
+            'progress'            => $total > 0 ? (($this->currentQuestion + 1) / $total) * 100 : 0,
         ]);
     }
 }

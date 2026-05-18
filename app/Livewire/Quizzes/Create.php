@@ -2,140 +2,122 @@
 
 namespace App\Livewire\Quizzes;
 
-use App\Models\Cour;
+use App\Models\Course;
 use App\Models\Quiz;
-use App\Models\QuizQuestion;
-use App\Models\QuizOption;
-use Livewire\Component;
-use Livewire\Attributes\Layout;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Create extends Component
 {
-    public Cour $cour;
-    public $title = '';
-    public $description = '';
+    public Course  $course;
+    public string  $title       = '';
+    public string  $description = '';
+    public array   $questions   = [];
+    public int     $currentQuestionIndex = 0;
+    public bool    $showQuestionForm     = false;
 
-    public $questions = [];
-    public $currentQuestionIndex = 0;
-    public $showQuestionForm = false;
-
-    protected $rules = [
-        'title' => 'required|string|max:255',
+    protected array $rules = [
+        'title'       => 'required|string|max:255',
         'description' => 'nullable|string',
     ];
 
-    public function mount(Cour $cour)
+    public function mount(Course $course): void
     {
         $user = auth()->user();
 
-        if (!$user) {
-            abort(403, 'You are not logged in.');
+        if (! $user->isTeacher() || (int) $course->teacher_id !== (int) $user->id) {
+            abort(403);
         }
 
-        if (!$user->isTeacher()) {
-            abort(403, 'Only teachers can create quizzes. Your role: ' . $user->role);
-        }
-
-        if ($cour->teacher_id != $user->id) {
-            abort(403, 'You do not own this course. Course teacher: ' . $cour->teacher_id . ', You: ' . $user->id);
-        }
-
-        $this->cour = $cour;
+        $this->course = $course;
     }
 
-    public function addQuestion()
+    public function addQuestion(): void
     {
         $this->questions[] = [
-            'id' => Str::random(10),
+            'id'            => Str::random(10),
             'question_text' => '',
-            'points' => 1,
-            'options' => [
+            'points'        => 1,
+            'options'       => [
                 ['id' => Str::random(10), 'option_text' => '', 'is_correct' => false],
-                ['id' => Str::random(10), 'option_text' => '', 'is_correct' => false]
-            ]
+                ['id' => Str::random(10), 'option_text' => '', 'is_correct' => false],
+            ],
         ];
         $this->currentQuestionIndex = count($this->questions) - 1;
-        $this->showQuestionForm = true;
+        $this->showQuestionForm     = true;
     }
 
-    public function editQuestion($index)
+    public function editQuestion(int $index): void
     {
         $this->currentQuestionIndex = $index;
-        $this->showQuestionForm = true;
+        $this->showQuestionForm     = true;
     }
 
-    public function addOption($questionIndex)
+    public function addOption(int $questionIndex): void
     {
         $this->questions[$questionIndex]['options'][] = [
-            'id' => Str::random(10),
+            'id'          => Str::random(10),
             'option_text' => '',
-            'is_correct' => false
+            'is_correct'  => false,
         ];
     }
 
-    public function removeOption($questionIndex, $optionIndex)
+    public function removeOption(int $questionIndex, int $optionIndex): void
     {
         unset($this->questions[$questionIndex]['options'][$optionIndex]);
         $this->questions[$questionIndex]['options'] = array_values($this->questions[$questionIndex]['options']);
     }
 
-    public function removeQuestion($index)
+    public function removeQuestion(int $index): void
     {
         unset($this->questions[$index]);
         $this->questions = array_values($this->questions);
     }
 
-    public function saveQuiz()
+    public function cancelQuestionForm(): void
+    {
+        $this->showQuestionForm     = false;
+        $this->currentQuestionIndex = 0;
+    }
+
+    public function saveQuiz(): mixed
     {
         $this->validate();
 
-        foreach ($this->questions as $questionData) {
-            $hasCorrect = false;
-            foreach ($questionData['options'] as $option) {
-                if ($option['is_correct']) {
-                    $hasCorrect = true;
-                    break;
-                }
-            }
-            if (!$hasCorrect) {
+        foreach ($this->questions as $q) {
+            $hasCorrect = collect($q['options'])->contains('is_correct', true);
+            if (! $hasCorrect) {
                 session()->flash('error', 'Each question must have at least one correct answer.');
-                return;
+                return null;
             }
         }
 
         $quiz = Quiz::create([
-            'course_id' => $this->cour->id,
-            'title' => $this->title,
-            'description' => $this->description,
+            'course_id'    => $this->course->id,
+            'title'        => $this->title,
+            'description'  => $this->description,
             'is_published' => true,
         ]);
 
-        foreach ($this->questions as $questionData) {
+        foreach ($this->questions as $qData) {
             $question = $quiz->questions()->create([
-                'question_text' => $questionData['question_text'],
-                'points' => $questionData['points'],
-                'order' => 0,
+                'question_text' => $qData['question_text'],
+                'points'        => $qData['points'],
+                'order'         => 0,
             ]);
 
-            foreach ($questionData['options'] as $optionData) {
+            foreach ($qData['options'] as $oData) {
                 $question->options()->create([
-                    'option_text' => $optionData['option_text'],
-                    'is_correct' => $optionData['is_correct'],
+                    'option_text' => $oData['option_text'],
+                    'is_correct'  => $oData['is_correct'],
                 ]);
             }
         }
 
         session()->flash('success', 'Quiz created successfully!');
-
-        return redirect()->route('teacher.quizzes.index', $this->cour);
-    }
-
-    public function cancelQuestionForm()
-    {
-        $this->showQuestionForm = false;
-        $this->currentQuestionIndex = null;
+        return redirect()->route('teacher.quizzes.index', $this->course);
     }
 
     public function render()

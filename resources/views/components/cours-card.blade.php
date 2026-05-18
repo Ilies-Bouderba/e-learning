@@ -1,12 +1,3 @@
-<?php
-
-use Livewire\Component;
-
-new class extends Component {
-    //
-};
-?>
-
 <div class="courses-grid">
     <div class="course-card">
         <div class="course-card-header">
