@@ -190,7 +190,11 @@
                                 ->where('is_published', true)
                                 ->where(function($q) {
                                     $q->whereNull('end_date')
-                                      ->orWhere('end_date', '>=', now());
+                                    ->orWhere('end_date', '>=', now())
+                                    ->orWhereHas('attempts', function($a) {
+                                        $a->where('student_id', auth()->id())
+                                            ->whereNotNull('completed_at');
+                                    });
                                 })
                                 ->latest()
                                 ->take(3)

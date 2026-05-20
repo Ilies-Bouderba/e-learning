@@ -80,7 +80,7 @@
 
             $recentChapterComments = \App\Models\ChapterComment::whereHas('chapter.course', function($q) use ($courseIds) {
                 $q->whereIn('course_id', $courseIds);
-            })->with(['student', 'chapter.course'])->latest()->take(5)->get();
+            })->with(['author', 'chapter.course'])->latest()->take(5)->get();
         @endphp
 
         <div class="dash-stats">
@@ -227,7 +227,7 @@
                                         <div class="ann-course" style="font-size: 0.7rem; margin-top: 0.25rem;">{{ Str::limit($ann->content, 80) }}</div>
                                     </div>
                                 </div>
-                                <span class="ann-date">{{ $ann->posted_at->diffForHumans() }}</span>
+                                <span class="ann-date">{{ $ann->posted_at ? \Carbon\Carbon::parse($ann->posted_at)->diffForHumans() : '' }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -249,11 +249,11 @@
                     <div class="comments-list">
                         @foreach($recentComments as $comment)
                             <div class="comment-item">
-                                <div class="comment-avatar">{{ strtoupper(substr($comment->student->name, 0, 2)) }}</div>
+                                <div class="comment-avatar">{{ strtoupper(substr($comment->author->name, 0, 2)) }}</div>
                                 <div class="comment-body">
-                                    <div class="comment-course">{{ $comment->course->title }}</div>
+                                    <div class="comment-course">{{ $comment->course->title ?? 'Unknown chapter' }}</div>
                                     <div class="comment-text">{{ Str::limit($comment->comment_text, 90) }}</div>
-                                    <div class="comment-date">{{ $comment->posted_at->diffForHumans() }}</div>
+                                    <div class="comment-date">{{ $comment->created_at ? \Carbon\Carbon::parse($comment->created_at)->diffForHumans() : '' }}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -280,13 +280,13 @@
                             <div class="comment-item" style="padding: 0.75rem 0; border-bottom: 1px solid rgba(15,14,23,0.08);">
                                 <div style="display: flex; gap: 0.75rem;">
                                     <div class="comment-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--c-dark); color: var(--c-yellow); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0;">
-                                        {{ strtoupper(substr($comment->student->name, 0, 2)) }}
+                                        {{ strtoupper(substr($comment->author->name, 0, 2)) }}
                                     </div>
                                     <div class="comment-body" style="flex: 1;">
-                                        <div style="font-weight: 700; font-size: 0.8rem;">{{ $comment->student->name }}</div>
+                                        <div style="font-weight: 700; font-size: 0.8rem;">{{ $comment->author->name }}</div>
                                         <div style="font-size: 0.7rem; color: var(--c-muted);">on {{ $comment->chapter->course->title }} · Chapter {{ $comment->chapter->chapter_number }}</div>
                                         <div style="font-size: 0.8rem; margin-top: 0.25rem;">{{ Str::limit($comment->comment_text, 80) }}</div>
-                                        <a href="{{ route('chapters.show', ['cour' => $comment->chapter->course, 'chapter' => $comment->chapter]) }}" class="btn-sm" style="margin-top: 0.5rem; font-size: 0.7rem;">View Discussion →</a>
+                                        <a href="{{ route('chapters.show', ['course' => $comment->chapter->course, 'chapter' => $comment->chapter]) }}" class="btn-sm" style="margin-top: 0.5rem; font-size: 0.7rem;">View Discussion →</a>
                                     </div>
                                 </div>
                             </div>

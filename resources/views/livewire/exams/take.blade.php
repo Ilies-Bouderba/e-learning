@@ -6,9 +6,46 @@
                 <h1 class="cc-title" style="margin-top: 1rem;">{{ $exam->title }}</h1>
                 <p class="cc-sub">{{ $exam->description }}</p>
                 @if($exam->duration_minutes)
-                    <div class="exam-timer" style="margin-top: 1rem; padding: 0.5rem; background: rgba(255,225,77,0.2); border-radius: 8px; display: inline-block;">
-                        ⏱️ Duration: {{ $exam->duration_minutes }} minutes
-                    </div>
+                <div id="exam-timer" style="position: sticky; top: 0; z-index: 100; background: var(--c-bg); border-bottom: var(--border); padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700;">⏱️ Time Remaining:</span>
+                    <span id="timer-display" style="font-size: 1.5rem; font-weight: 800; color: var(--c-yellow);"></span>
+                </div>
+
+                <script>
+                    (function() {
+                        const startedAt = new Date("{{ $attempt->started_at->toISOString() }}");
+                        const durationMs = {{ $exam->duration_minutes }} * 60 * 1000;
+                        const endTime = new Date(startedAt.getTime() + durationMs);
+
+                        function updateTimer() {
+                            const now = new Date();
+                            const remaining = endTime - now;
+
+                            if (remaining <= 0) {
+                                document.getElementById('timer-display').textContent = '00:00';
+                                document.getElementById('timer-display').style.color = '#ef4444';
+                                // Auto submit
+                                @this.call('submitExam');
+                                return;
+                            }
+
+                            if (remaining < 300000) { // less than 5 minutes
+                                document.getElementById('timer-display').style.color = '#ef4444';
+                            } else if (remaining < 600000) { // less than 10 minutes
+                                document.getElementById('timer-display').style.color = '#f59e0b';
+                            }
+
+                            const minutes = Math.floor(remaining / 60000);
+                            const seconds = Math.floor((remaining % 60000) / 1000);
+                            document.getElementById('timer-display').textContent =
+                                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+
+                            setTimeout(updateTimer, 1000);
+                        }
+
+                        updateTimer();
+                    })();
+                </script>
                 @endif
                 <div class="quiz-progress" style="margin-top: 1rem;">
                     <div style="background: rgba(15,14,23,0.1); height: 8px; border-radius: 4px; overflow: hidden;">

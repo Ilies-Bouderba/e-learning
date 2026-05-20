@@ -92,7 +92,7 @@ class Take extends Component
 
         $this->attempt->update([
             'completed_at' => now(),
-            'score'        => $percentage,
+            'score'        => (int) round($percentage),
             'is_graded'    => true,
             'answers'      => $this->answers,
         ]);

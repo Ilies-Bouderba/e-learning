@@ -131,10 +131,10 @@
                         <h2 class="dash-card-title">Statistics</h2>
                     </div>
                     <div style="padding: 0.5rem 0;">
-                        <p><strong>Total Attempts:</strong> {{ $studentAttempts->count() }}</p>
-                        <p><strong>Average Score:</strong> {{ round($studentAttempts->avg('score'), 1) }}%</p>
-                        <p><strong>Highest Score:</strong> {{ round($studentAttempts->max('score'), 1) }}%</p>
-                        <p><strong>Lowest Score:</strong> {{ round($studentAttempts->min('score'), 1) }}%</p>
+                        <p><strong>Total Attempts:</strong> {{ collect($studentAttempts)->count() }}</p>
+                        <p><strong>Average Score:</strong> {{ round(collect($studentAttempts)->avg('score'), 1) }}%</p>
+                        <p><strong>Highest Score:</strong> {{ round(collect($studentAttempts)->max('score'), 1) }}%</p>
+                        <p><strong>Lowest Score:</strong> {{ round(collect($studentAttempts)->min('score'), 1) }}%</p>
                     </div>
                 </div>
             </div>
@@ -144,17 +144,17 @@
                     <h2 class="dash-card-title">Student Attempts</h2>
                 </div>
                 <div class="students-list">
-                    @forelse($studentAttempts as $attempt)
+                    @forelse(collect($studentAttempts) as $attempt)
                     <div class="student-item" style="padding: 1rem; border-bottom: 1px solid rgba(15,14,23,0.08);">
-                        <div class="student-avatar">{{ strtoupper(substr($attempt->student->name, 0, 2)) }}</div>
+                        <div class="student-avatar">{{ strtoupper(substr($attempt['student']['name'] ?? 'Unknown', 0, 2)) }}</div>
                         <div class="student-info">
-                            <div class="student-name">{{ $attempt->student->name }}</div>
-                            <div class="student-course">{{ $attempt->student->email }}</div>
+                            <div class="student-name">{{ $attempt['student']['name'] ?? 'Unknown' }}</div>
+                            <div class="student-course">{{ $attempt['student']['email'] ?? '' }}</div>
                         </div>
                         <div class="student-progress">
-                            @if($attempt->completed_at)
+                            @if($attempt['completed_at'])
                                 <span class="badge" style="background: #10b981; color: white;">Completed</span>
-                                <span class="student-pct" style="margin-left: 0.5rem;">{{ round($attempt->score) }}%</span>
+                                <span class="student-pct" style="margin-left: 0.5rem;">{{ round($attempt['score']) }}%</span>
                             @else
                                 <span class="badge" style="background: #f59e0b;">In Progress</span>
                             @endif

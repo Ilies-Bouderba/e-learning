@@ -14,7 +14,7 @@ class Show extends Component
     public Course       $course;
     public Exam         $exam;
     public              $studentAttempt  = null;
-    public array        $studentAttempts = [];
+    public              $studentAttempts = [];
 
     public function mount(Course $course, Exam $exam): mixed
     {
@@ -46,7 +46,7 @@ class Show extends Component
             if ((int) $course->teacher_id !== (int) $user->id) {
                 abort(403);
             }
-            $this->studentAttempts = $this->exam->attempts()->with('student')->get()->toArray();
+            $this->studentAttempts = $this->exam->attempts()->with('student')->get();
             return null;
         }
 

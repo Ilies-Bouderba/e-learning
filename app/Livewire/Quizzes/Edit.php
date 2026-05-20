@@ -35,7 +35,7 @@ class Edit extends Component
             abort(403);
         }
 
-        if ($quiz->course_id !== $course->id) {
+        if ((int) $quiz->course_id !== (int) $course->id) {
             abort(404);
         }
 

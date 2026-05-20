@@ -10,9 +10,10 @@ class AIGradingService
     private const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
     private const MODEL   = 'openai/gpt-3.5-turbo';
 
-    public function __construct(
-        private readonly ?string $apiKey = null
-    ) {
+    private ?string $apiKey = null;
+
+    public function __construct()
+    {
         $this->apiKey = config('services.openrouter.key') ?? env('OPENROUTER_KEY');
     }
 

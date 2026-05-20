@@ -148,16 +148,16 @@
                 <div class="students-list">
                     @forelse($studentAttempts as $attempt)
                     <div class="student-item" style="padding: 1rem; border-bottom: 1px solid rgba(15,14,23,0.08);">
-                        <div class="student-avatar">{{ strtoupper(substr($attempt->student->name, 0, 2)) }}</div>
+                        <div class="student-avatar">{{ strtoupper(substr($attempt['student']['name'] ?? 'UN', 0, 2)) }}</div>
                         <div class="student-info">
-                            <div class="student-name">{{ $attempt->student->name }}</div>
-                            <div class="student-course">{{ $attempt->student->email }}</div>
+                            <div class="student-name">{{ $attempt['student']['name'] ?? 'Unknown' }}</div>
+                            <div class="student-course">{{ $attempt['student']['email'] ?? '' }}</div>
                         </div>
                         <div class="student-progress">
-                            @if($attempt->completed_at)
-                                @if($attempt->is_graded)
+                            @if($attempt['completed_at'])
+                                @if($attempt['is_graded'])
                                     <span class="badge" style="background: #10b981; color: white;">Graded</span>
-                                    <span class="student-pct" style="margin-left: 0.5rem;">{{ $attempt->total_score }}/{{ $exam->total_score }}</span>
+                                    <span class="student-pct" style="margin-left: 0.5rem;">{{ $attempt['total_score'] }}/{{ $exam->total_score }}</span>
                                 @else
                                     <span class="badge" style="background: #f59e0b;">Pending</span>
                                 @endif
